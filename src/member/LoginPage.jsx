@@ -2,9 +2,10 @@
 // 로그인 프론트는 이곳에 구현해주세요.
 
 import React, { useState } from 'react';
+import Signup from './SignupPage';
 // import './Login.css';
 
-const Login = () => {
+const LoginPage = () => {
     // 입력값을 관리하기 위한 상태 (필요 시 사용)
     const [id, setId] = useState('');
     const [password, setPassword] = useState('');
@@ -45,12 +46,12 @@ const Login = () => {
 
                 {/* 하단 링크 섹션 */}
                 <div className="footer-links">
-                    <span className="link-text">회원가입</span>
-                    <span className="link-text">비밀번호 찾기</span>
+                    <span className="link-text"><link to="signup">회원가입</link></span>
+                    <span className="link-text"><link to="">비밀번호 찾기</link></span>
                 </div>
             </div>
         </div>
     );
 }
 
-export default Login;
+export default LoginPage;

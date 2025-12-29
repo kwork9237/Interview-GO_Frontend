@@ -3,7 +3,7 @@
 
 import React, { useState } from 'react';
 
-import MainHeader from "../global/MainHeader";
+import MainHeader from '../../components/layout/MainHeader';
 
 const InterviewSetting = () => {
     // 메인 헤더 출력
@@ -104,6 +104,9 @@ const InterviewSetting = () => {
         {/* 3. 입장 버튼 (최하단 고정) */}
         <div className="pt-4">
             <button className="w-full py-4 bg-gray-300 hover:bg-gray-400 text-black font-bold rounded-xl transition">
+                {/* 면접 페이지 이동 (인터뷰 또는 보이스) 
+                    아니면 테스트페이지에서 이동하여 voice이면 voice출력으로
+                */}
             면접 입장하기
             </button>
         </div>

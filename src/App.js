@@ -35,33 +35,32 @@ function App() {
     <BrowserRouter>
       <Routes>
         {/* 메인 페이지 (임시)*/}
-        <Route path='/' element={Main}/>
+        <Route path='/' element={<Main/>}/>
 
         {/* 로그인 및 회원가입 */}
-        <Route path='/login' element={Login}/>
-        <Route path='/signup' element={Signup}/>
-        <Route path='/mypage' element={MyPage}/>
+        <Route path='/login' element={<Login/>}/>
+        <Route path='/signup' element={<Signup/>}/>
+        <Route path='/mypage' element={<MyPage/>}/>
         
         {/* 헤드를 사용하는 페이지 */}
         <Route element={<MainLayout/>}>
           {/* 뉴스 */}
-          <Route path='/news' element={NewsPage}/>
+          <Route path='/news' element={<NewsPage/>}/>
 
           {/* 코딩 테스트 */}
-          <Route path='/codingtest/main' element={CodingTestMain}/>
-          <Route path='/codingtest/result' element={CodingTestResult}/>
+          <Route path='/codingtest/main' element={<CodingTestMain/>}/>
+          <Route path='/codingtest/result' element={<CodingTestResult/>}/>
 
           {/* 면접 */}
-          <Route path='/interview/setting' element={InterviewSetting}/>
-          <Route path='/interview/feedback' element={InterviewFeedback}/>
+          <Route path='/interview/setting' element={<InterviewSetting/>}/>
+          <Route path='/interview/feedback' element={<InterviewFeedback/>}/>
         </Route>
 
         {/* 면접 전용 헤드 사용 */}
         <Route element={<InterviewLayout/>}>
-          <Route path='/interview/chat' element={TextInterview}/>
-          <Route path='/interview/voice' element={VoiceInterview}/>
+          <Route path='/interview/chat' element={<TextInterview/>}/>
+          <Route path='/interview/voice' element={<VoiceInterview/>}/>
         </Route>
-
 
         {/* 아래처럼 지정하면 처음 Layout 출력 > Route 된 경로 안의 페이지 데이터 출력된다.
             element를 지정하지 않을 경우는 그냥 Route Path만 지정하면 된다.

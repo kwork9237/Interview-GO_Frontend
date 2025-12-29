@@ -25,6 +25,8 @@ import VoiceInterview from './interview/VoiceInterviewPage';
 // 코딩 테스트
 import CodingTestMain from './codingTest/CodingTestPage';
 import CodingTestResult from './codingTest/CodingTestResultPage';
+import ExamDetail from './codingTest/ExamDetail';
+
 
 // 테스트용 페이지
 import TestMain from './test/maintest'; 
@@ -48,8 +50,11 @@ function App() {
           <Route path='/news' element={<NewsPage/>}/>
 
           {/* 코딩 테스트 */}
-          <Route path='/codingtest/main' element={<CodingTestMain/>}/>
-          <Route path='/codingtest/result' element={<CodingTestResult/>}/>
+          <Route path='/codingtest/main' element={<CodingTestMain />} />
+          <Route path='/codingtest/result' element={<CodingTestResult />} />
+          <Route path='/codingtest/detail/:id' element={<ExamDetail />} />
+
+
 
           {/* 면접 */}
           <Route path='/interview/setting' element={<InterviewSetting/>}/>

@@ -29,38 +29,45 @@ import CodingTestResult from './codingTest/CodingTestResultPage';
 // 테스트용 페이지
 import TestMain from './test/maintest'; 
 
+// npm start로 실행
+// 시작되지 않을 경우, npm install >> npm start
+import TestInterview from './interview/InterviewTestPage';
+
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         {/* 메인 페이지 (임시)*/}
-        <Route path='/' element={Main}/>
+        <Route path='/' element={<Main/>}/>
 
         {/* 로그인 및 회원가입 */}
-        <Route path='/login' element={Login}/>
-        <Route path='/signup' element={Signup}/>
-        <Route path='/mypage' element={MyPage}/>
+        <Route path='/login' element={<Login/>}/>
+        <Route path='/signup' element={<Signup/>}/>
+        <Route path='/mypage' element={<MyPage/>}/>
         
         {/* 헤드를 사용하는 페이지 */}
         <Route element={<MainLayout/>}>
           {/* 뉴스 */}
-          <Route path='/news' element={NewsPage}/>
+          <Route path='/news' element={<NewsPage/>}/>
 
           {/* 코딩 테스트 */}
-          <Route path='/codingtest/main' element={CodingTestMain}/>
-          <Route path='/codingtest/result' element={CodingTestResult}/>
+          <Route path='/codingtest/main' element={<CodingTestMain/>}/>
+          <Route path='/codingtest/result' element={<CodingTestResult/>}/>
 
           {/* 면접 */}
-          <Route path='/interview/setting' element={InterviewSetting}/>
-          <Route path='/interview/feedback' element={InterviewFeedback}/>
+          <Route path='/interview/setting' element={<InterviewSetting/>}/>
+          <Route path='/interview/feedback' element={<InterviewFeedback/>}/>
         </Route>
 
         {/* 면접 전용 헤드 사용 */}
         <Route element={<InterviewLayout/>}>
-          <Route path='/interview/chat' element={TextInterview}/>
-          <Route path='/interview/voice' element={VoiceInterview}/>
+          <Route path='/interview/chat' element={<TextInterview/>}/>
+          <Route path='/interview/voice' element={<VoiceInterview/>}/>
         </Route>
+
+        {/* 테스트 페이지 종류 */}
+        <Route path='/interview/test' element={<TestInterview/>}/>
 
 
         {/* 아래처럼 지정하면 처음 Layout 출력 > Route 된 경로 안의 페이지 데이터 출력된다.

@@ -97,7 +97,7 @@ const SignupPage = () => {
                 
                 {/* 로그인으로 돌아가기 링크 (선택사항) */}
                 <div className="link-container">
-                    <Link to="/" className="back-link">로그인으로 돌아가기</Link>
+                    <Link to="loginpage" className="back-link">로그인으로 돌아가기</Link>
                 </div>
             </div>
         </div>

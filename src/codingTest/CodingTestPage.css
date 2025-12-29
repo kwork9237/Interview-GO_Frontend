@@ -1,0 +1,54 @@
+.exam-list-header,
+.exam-list-item {
+  display: flex;
+  padding: 10px 20px;
+  border-radius: 5px;
+  align-items: center;
+}
+
+.exam-list-header {
+  background-color: #e0e0e0;
+  font-weight: bold;
+}
+
+.exam-list-item {
+  background-color: #f9f9f9;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.exam-list-item:hover {
+  background-color: #ececec;
+}
+
+/* 각 항목 폭 지정 */
+.exam-list-header span,
+.exam-list-item span {
+  text-align: center;
+}
+
+.exam-list-header span:nth-child(1),
+.exam-list-item span:nth-child(1) {
+  width: 80px; /* 상태 */
+}
+
+.exam-list-header span:nth-child(2),
+.exam-list-item span:nth-child(2) {
+  flex: 2; /* 제목 */
+  text-align: left;
+}
+
+.exam-list-header span:nth-child(3),
+.exam-list-item span:nth-child(3) {
+  width: 120px; /* 게시날짜 */
+}
+
+.exam-list-header span:nth-child(4),
+.exam-list-item span:nth-child(4) {
+  width: 100px; /* 완료인원 */
+}
+.header-center {
+  text-align: center;
+}
+

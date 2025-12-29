@@ -10,7 +10,7 @@
   display: flex;
   align-items: center;
   justify-content: center; /* 제목과 상태 중앙 정렬 */
-  gap: 10px;              /* 상태와 제목 사이 간격 */
+  gap: 20px;              /* 상태와 제목 사이 간격 */
   margin-bottom: 15px;
 }
 

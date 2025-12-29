@@ -1,9 +1,15 @@
+.coding-test-container {
+  max-width: 2000px;
+  margin: 50px auto; /* 화면 가운데 정렬 */
+  padding: 10px;
+}
+
 .exam-list-header,
 .exam-list-item {
   display: flex;
+  align-items: center;
   padding: 10px 20px;
   border-radius: 5px;
-  align-items: center;
 }
 
 .exam-list-header {
@@ -22,33 +28,34 @@
   background-color: #ececec;
 }
 
-/* 각 항목 폭 지정 */
+/* 각 항목 폭 조정 */
 .exam-list-header span,
 .exam-list-item span {
   text-align: center;
+  display: inline-block;
 }
 
+/* 상태 */
 .exam-list-header span:nth-child(1),
 .exam-list-item span:nth-child(1) {
-  width: 80px; /* 상태 */
+  width: 250px;
 }
 
+/* 제목 */
 .exam-list-header span:nth-child(2),
 .exam-list-item span:nth-child(2) {
-  flex: 2; /* 제목 */
-  text-align: left;
-}
-
-.exam-list-header span:nth-child(3),
-.exam-list-item span:nth-child(3) {
-  width: 120px; /* 게시날짜 */
-}
-
-.exam-list-header span:nth-child(4),
-.exam-list-item span:nth-child(4) {
-  width: 100px; /* 완료인원 */
-}
-.header-center {
+  width: 200px; /* 제목과 게시날짜 사이 간격 조절 */
   text-align: center;
 }
 
+/* 게시날짜 */
+.exam-list-header span:nth-child(3),
+.exam-list-item span:nth-child(3) {
+  width: 800px;
+}
+
+/* 완료인원 */
+.exam-list-header span:nth-child(4),
+.exam-list-item span:nth-child(4) {
+  width: 200px;
+}

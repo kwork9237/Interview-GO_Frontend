@@ -1,263 +1,364 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react'; // useRef 추가
 import { useNavigate } from 'react-router-dom';
 
-const SignupPage = () => {
-    const navigate = useNavigate();
+const Signup = () => {
+  const navigate = useNavigate();
+  
+  // ★ 포커스 이동을 위한 Ref 설정
+  const lastPhoneRef = useRef(null);
 
-    // 입력값 상태 관리
-    const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-        nickname: '',
-        contact2: '', // 전화번호 중간 자리
-        contact3: ''  // 전화번호 끝 자리
+  // 입력값 상태 관리
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    nickname: '',
+    phoneMiddle: '', // 중간 번호
+    phoneLast: '',   // 마지막 번호
+  });
+
+  const { email, password, nickname, phoneMiddle, phoneLast } = formData;
+
+  // 일반 입력 핸들러
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
     });
+  };
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        
-        // 전화번호 입력 시 4자리 넘어가면 입력 방지
-        if ((name === 'contact2' || name === 'contact3') && value.length > 4) {
-            return;
-        }
-        
-        setFormData({
-            ...formData,
-            [name]: value
-        });
+  // ★ 중간 번호 핸들러 (최대 4자리, 다 차면 뒤로 이동)
+  const handlePhoneMiddle = (e) => {
+    const value = e.target.value;
+    const onlyNumber = value.replace(/[^0-9]/g, ''); // 숫자만
+
+    if (onlyNumber.length <= 4) {
+      setFormData((prev) => ({
+        ...prev,
+        phoneMiddle: onlyNumber,
+      }));
+
+      // 4자리가 되면 자동으로 뒷자리 칸으로 포커스 이동
+      if (onlyNumber.length === 4 && lastPhoneRef.current) {
+        lastPhoneRef.current.focus();
+      }
+    }
+  };
+
+  // ★ 마지막 번호 핸들러 (최대 4자리)
+  const handlePhoneLast = (e) => {
+    const value = e.target.value;
+    const onlyNumber = value.replace(/[^0-9]/g, ''); // 숫자만
+
+    if (onlyNumber.length <= 4) {
+      setFormData((prev) => ({
+        ...prev,
+        phoneLast: onlyNumber,
+      }));
+    }
+  };
+
+  // 중복확인 (가상 로직)
+  const handleCheckDuplicate = (e) => {
+    e.preventDefault();
+    if (!email) {
+      alert('이메일을 입력해주세요.');
+      return;
+    }
+    alert('사용 가능한 아이디입니다.'); 
+  };
+
+  // 회원가입 제출
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    // 유효성 검사
+    if (phoneMiddle.length < 3 || phoneLast.length < 4) {
+      alert('전화번호를 정확히 입력해주세요.');
+      return;
+    }
+
+    // ★ 전송 시 합치기: 010-1234-5678 형식
+    const fullPhone = `010-${phoneMiddle}-${phoneLast}`;
+    
+    const submitData = {
+      email,
+      password,
+      nickname,
+      phone: fullPhone
     };
 
-    const handleSignup = () => {
-        // 전화번호 합치기
-        const fullContact = `010-${formData.contact2}-${formData.contact3}`;
-        
-        console.log('회원가입 요청 데이터:', { ...formData, contact: fullContact });
-        alert('가입이 완료되었습니다.');
-        
-        // 가입 완료 후 로그인 페이지로 이동
-        navigate('/loginpage');
-    };
+    console.log('--- 전송 데이터 확인 ---');
+    console.log(submitData);
+    
+    alert(`${nickname}님 환영합니다!\n(번호: ${fullPhone})`);
+    navigate('/login');
+  };
 
-    // --- CSS-in-JS 스타일 정의 ---
-    const styles = {
-        page: {
-            backgroundColor: '#f4f4f4', // 전체 배경 연한 회색
-            minHeight: '100vh',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            position: 'relative',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-        },
-        logo: {
-            position: 'absolute',
-            top: '20px',
-            left: '20px',
-            fontWeight: 'bold',
-            fontSize: '1.5rem',
-            color: '#333',
-            cursor: 'default'
-        },
-        container: {
-            backgroundColor: '#ffffff', // 폼 배경 흰색
-            padding: '40px',
-            borderRadius: '12px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.1)', // 부드러운 그림자
-            width: '100%',
-            maxWidth: '400px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center', // 내부 요소 가운데 정렬
-        },
-        title: {
-            margin: '0 0 30px 0',
-            fontSize: '26px',
-            fontWeight: 'bold',
-            color: '#333'
-        },
-        formGroup: {
-            width: '100%',
-            marginBottom: '20px',
-            textAlign: 'left'
-        },
-        label: {
-            display: 'block',
-            marginBottom: '8px',
-            fontSize: '14px',
-            fontWeight: '600',
-            color: '#555'
-        },
-        input: {
-            width: '100%',
-            padding: '12px',
-            boxSizing: 'border-box',
-            borderRadius: '6px',
-            border: '1px solid #ddd',
-            fontSize: '15px',
-            outline: 'none',
-            transition: 'border-color 0.2s'
-        },
-        phoneWrapper: {
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '5px'
-        },
-        phoneInputFixed: {
-            width: '25%',
-            padding: '12px',
-            textAlign: 'center',
-            borderRadius: '6px',
-            border: '1px solid #ddd',
-            backgroundColor: '#f9f9f9', // 읽기 전용 느낌의 배경색
-            color: '#666',
-            fontSize: '15px'
-        },
-        phoneInput: {
-            width: '30%',
-            padding: '12px',
-            textAlign: 'center',
-            borderRadius: '6px',
-            border: '1px solid #ddd',
-            fontSize: '15px',
-            outline: 'none'
-        },
-        dash: {
-            color: '#999',
-            fontWeight: 'bold'
-        },
-        signupBtn: {
-            width: '100%',
-            padding: '14px',
-            backgroundColor: '#007bff', // 요청하신 파란색
-            color: '#ffffff',
-            border: 'none',
-            borderRadius: '6px',
-            fontSize: '16px',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            marginTop: '10px',
-            transition: 'background-color 0.2s'
-        },
-        loginLinkContainer: {
-            marginTop: '20px',
-            textAlign: 'center'
-        },
-        loginBtn: {
-            background: 'none',
-            border: 'none',
-            color: '#666',
-            textDecoration: 'underline',
-            cursor: 'pointer',
-            fontSize: '14px',
-            padding: '5px'
-        }
-    };
+  return (
+    <div style={styles.fullBackground}>
+      <div style={styles.logoWrapper} onClick={() => navigate('/')}>
+        TEAM LOGO
+      </div>
 
-    return (
-        <div style={styles.page}>
-            {/* 1. 화면 구석 TEAM LOGO */}
-            <div style={styles.logo}>TEAM LOGO</div>
-
-            <div style={styles.container}>
-                {/* 타이틀 */}
-                <h1 style={styles.title}>회원가입</h1>
-
-                {/* 2. 아이디 (이메일) */}
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>아이디 (이메일)</label>
-                    <input 
-                        type="email" 
-                        name="email"
-                        style={styles.input}
-                        value={formData.email}
-                        onChange={handleChange}
-                        placeholder="example@email.com"
-                    />
-                </div>
-
-                {/* 3. 비밀번호 */}
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>비밀번호</label>
-                    <input 
-                        type="password" 
-                        name="password"
-                        style={styles.input}
-                        value={formData.password}
-                        onChange={handleChange}
-                        placeholder="비밀번호 입력"
-                    />
-                </div>
-
-                {/* 4. 닉네임 */}
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>닉네임</label>
-                    <input 
-                        type="text" 
-                        name="nickname"
-                        style={styles.input}
-                        value={formData.nickname}
-                        onChange={handleChange}
-                        placeholder="별명 입력"
-                    />
-                </div>
-
-                {/* 5. 연락처 (010 고정 + 3분할) */}
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>연락처</label>
-                    <div style={styles.phoneWrapper}>
-                        {/* 010 고정 (수정 불가) */}
-                        <input 
-                            type="text" 
-                            value="010" 
-                            readOnly 
-                            style={styles.phoneInputFixed} 
-                        />
-                        <span style={styles.dash}>-</span>
-                        {/* 가운데 번호 */}
-                        <input 
-                            type="number" // 숫자만 입력
-                            name="contact2"
-                            style={styles.phoneInput}
-                            value={formData.contact2}
-                            onChange={handleChange}
-                            placeholder="1234"
-                        />
-                        <span style={styles.dash}>-</span>
-                        {/* 마지막 번호 */}
-                        <input 
-                            type="number" // 숫자만 입력
-                            name="contact3"
-                            style={styles.phoneInput}
-                            value={formData.contact3}
-                            onChange={handleChange}
-                            placeholder="5678"
-                        />
-                    </div>
-                </div>
-
-                {/* 6. 가입 완료 버튼 (파란색) */}
-                <button 
-                    style={styles.signupBtn} 
-                    onClick={handleSignup}
-                    onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'} // 호버 효과 (선택사항)
-                    onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
-                >
-                    가입하기
-                </button>
-
-                {/* 7. 로그인으로 돌아가기 (배경 없는 텍스트 버튼) */}
-                <div style={styles.loginLinkContainer}>
-                    <button 
-                        onClick={() => navigate('/loginpage')} 
-                        style={styles.loginBtn}
-                    >
-                        로그인으로 돌아가기
-                    </button>
-                </div>
-            </div>
+      <div style={styles.signupCard}>
+        <div style={styles.header}>
+          <h1 style={styles.title}>회원가입</h1>
         </div>
-    );
+
+        <form onSubmit={handleSubmit} style={styles.form}>
+          
+          {/* 1. 이메일 */}
+          <div style={styles.inputRow}>
+            <label style={styles.label}>ID</label>
+            <div style={styles.inputWithBtnContainer}>
+              <input
+                type="email"
+                name="email"
+                value={email}
+                onChange={handleChange}
+                style={styles.inputShort}
+                placeholder="이메일"
+                required
+              />
+              <button type="button" style={styles.checkBtn} onClick={handleCheckDuplicate}>
+                중복확인
+              </button>
+            </div>
+          </div>
+
+          {/* 2. 비밀번호 */}
+          <div style={styles.inputRow}>
+            <label style={styles.label}>PW</label>
+            <input
+              type="password"
+              name="password"
+              value={password}
+              onChange={handleChange}
+              style={styles.input}
+              placeholder="비밀번호"
+              required
+            />
+          </div>
+
+          {/* 3. 닉네임 */}
+          <div style={styles.inputRow}>
+            <label style={styles.label}>NICK</label>
+            <input
+              type="text"
+              name="nickname"
+              value={nickname}
+              onChange={handleChange}
+              style={styles.input}
+              placeholder="닉네임"
+              required
+            />
+          </div>
+
+          {/* 4. 연락처 (3분할 적용) */}
+          <div style={styles.inputRow}>
+            <label style={styles.label}>TEL</label>
+            <div style={styles.phoneContainer}>
+              
+              {/* [고정] 010 */}
+              <input
+                type="text"
+                value="010"
+                readOnly
+                tabIndex={-1}
+                style={styles.phonePartFixed}
+              />
+              
+              {/* [입력] 중간 번호 */}
+              <input
+                type="tel"
+                name="phoneMiddle"
+                value={phoneMiddle}
+                onChange={handlePhoneMiddle}
+                style={styles.phonePart}
+                placeholder=""
+                required
+              />
+
+              {/* [입력] 마지막 번호 */}
+              <input
+                type="tel"
+                name="phoneLast"
+                value={phoneLast}
+                onChange={handlePhoneLast}
+                style={styles.phonePart}
+                placeholder=""
+                ref={lastPhoneRef} // 포커스 이동용 Ref 연결
+                required
+              />
+            </div>
+          </div>
+
+          {/* 가입 버튼 */}
+          <div style={styles.buttonWrapper}>
+            <button type="submit" style={styles.signupBtn}>
+              가입하기
+            </button>
+          </div>
+
+          <div style={styles.footer}>
+            이미 계정이 있으신가요? 
+            <span style={styles.link} onClick={() => navigate('/login')}>로그인</span>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 };
 
-export default SignupPage;
+// 스타일 정의
+const styles = {
+  fullBackground: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100vw',
+    height: '100vh',
+    backgroundColor: '#D9D9D9',
+    position: 'relative',
+    margin: 0,
+    padding: 0,
+    overflow: 'hidden',
+  },
+  logoWrapper: {
+    position: 'absolute',
+    top: '20px',
+    left: '20px',
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: '#007bff',
+    cursor: 'pointer',
+    userSelect: 'none',
+  },
+  signupCard: {
+    width: '100%',
+    maxWidth: '550px',
+    textAlign: 'center',
+  },
+  header: { marginBottom: '40px' },
+  title: { fontSize: '32px', fontWeight: 'bold', color: '#000' },
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '20px',
+  },
+  inputRow: {
+    display: 'flex',
+    alignItems: 'center',
+    width: '100%',
+    justifyContent: 'center',
+  },
+  label: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    marginRight: '20px',
+    width: '70px',
+    textAlign: 'left',
+  },
+  input: {
+    width: '320px',
+    height: '50px',
+    borderRadius: '25px',
+    border: 'none',
+    padding: '0 20px',
+    fontSize: '16px',
+    backgroundColor: '#fff',
+    outline: 'none',
+    boxSizing: 'border-box',
+  },
+  inputWithBtnContainer: {
+    display: 'flex',
+    width: '320px',
+    justifyContent: 'space-between',
+    gap: '10px',
+  },
+  inputShort: {
+    flex: 1,
+    height: '50px',
+    borderRadius: '25px',
+    border: 'none',
+    padding: '0 20px',
+    fontSize: '16px',
+    backgroundColor: '#fff',
+    outline: 'none',
+    boxSizing: 'border-box',
+  },
+  checkBtn: {
+    width: '100px',
+    height: '50px',
+    borderRadius: '25px',
+    border: 'none',
+    backgroundColor: '#007bff',
+    color: '#fff',
+    fontSize: '14px',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    whiteSpace: 'nowrap',
+  },
+
+  // ★ [스타일 추가] 3분할 전화번호 컨테이너
+  phoneContainer: {
+    display: 'flex',
+    width: '320px',
+    justifyContent: 'space-between',
+    gap: '10px', // 칸 사이 간격
+  },
+  // 010 고정창 스타일 (작은 사이즈)
+  phonePartFixed: {
+    width: '80px', // 010 영역 너비
+    height: '50px',
+    borderRadius: '25px',
+    border: 'none',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    backgroundColor: '#ced4da',
+    color: '#555',
+    textAlign: 'center',
+    outline: 'none',
+    boxSizing: 'border-box',
+    pointerEvents: 'none',
+    userSelect: 'none',
+  },
+  // 중간, 끝 번호 입력창 스타일 (동일 비율)
+  phonePart: {
+    flex: 1, // 남은 공간을 균등하게 나눔
+    height: '50px',
+    borderRadius: '25px',
+    border: 'none',
+    fontSize: '16px',
+    textAlign: 'center',
+    backgroundColor: '#fff',
+    outline: 'none',
+    boxSizing: 'border-box',
+    padding: '0 10px',
+  },
+
+  buttonWrapper: { marginTop: '10px' },
+  signupBtn: {
+    width: '320px',
+    height: '55px',
+    borderRadius: '30px',
+    border: 'none',
+    backgroundColor: '#007bff',
+    color: '#fff',
+    fontSize: '20px',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+  },
+  footer: { marginTop: '20px', fontSize: '16px', color: '#333' },
+  link: {
+    fontWeight: 'bold',
+    color: '#007bff',
+    textDecoration: 'none',
+    cursor: 'pointer',
+    marginLeft: '5px',
+  },
+};
+
+export default Signup;

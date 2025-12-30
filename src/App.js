@@ -7,9 +7,9 @@ import InterviewLayout from './components/layout/InterviewLayout';
 import Main from './pages/MainPage';
 
 // 로그인 및 회원가입
-import Login from './pages/member/LoginPage';
-import Signup from './pages/member/SignupPage';
-import MyPage from './pages/member/MyPage';
+import Login from './member/LoginPage';
+import Signup from './member/SignupPage';
+import MyPage from './member/MyPage';
 
 // 취업 동향
 import NewsPage from './pages/add-ons/NewsPage';

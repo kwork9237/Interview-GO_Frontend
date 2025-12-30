@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import MainLayout from './components/layout/MainLayout';
 import InterviewLayout from './components/layout/InterviewLayout';
 
+
 // 메인 페이지
 import Main from './pages/MainPage';
 
@@ -25,6 +26,7 @@ import VoiceInterview from './pages/interview/VoiceInterviewPage';
 // 코딩 테스트
 import CodingTestMain from './pages/codingTest/CodingTestPage';
 import CodingTestResult from './pages/codingTest/CodingTestResultPage';
+import ExamDetail from './pages/codingTest/ExamDetail';
 
 // 테스트용 페이지
 import TestMain from './pages/test/maintest';
@@ -55,6 +57,7 @@ function App() {
           {/* 코딩 테스트 */}
           <Route path='/codingtest/main' element={<CodingTestMain />} />
           <Route path='/codingtest/result' element={<CodingTestResult />} />
+          <Route path='/codingtest/detail/:id' element={<ExamDetail />} />
 
           {/* 면접 */}
           <Route path='/interview/setting' element={<InterviewSetting />} />

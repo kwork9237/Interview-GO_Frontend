@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'; // useRef 추가
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
@@ -58,16 +58,6 @@ const Signup = () => {
     }
   };
 
-  // 중복확인 (가상 로직)
-  const handleCheckDuplicate = (e) => {
-    e.preventDefault();
-    if (!email) {
-      alert('이메일을 입력해주세요.');
-      return;
-    }
-    alert('사용 가능한 아이디입니다.'); 
-  };
-
   // 회원가입 제출
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -108,23 +98,18 @@ const Signup = () => {
 
         <form onSubmit={handleSubmit} style={styles.form}>
           
-          {/* 1. 이메일 */}
+          {/* 1. 이메일 (버튼 제거 후 넓게 변경) */}
           <div style={styles.inputRow}>
             <label style={styles.label}>ID</label>
-            <div style={styles.inputWithBtnContainer}>
-              <input
-                type="email"
-                name="email"
-                value={email}
-                onChange={handleChange}
-                style={styles.inputShort}
-                placeholder="이메일"
-                required
-              />
-              <button type="button" style={styles.checkBtn} onClick={handleCheckDuplicate}>
-                중복확인
-              </button>
-            </div>
+            <input
+              type="email"
+              name="email"
+              value={email}
+              onChange={handleChange}
+              style={styles.input} /* 버튼이 없으므로 기본 input 스타일 사용 */
+              placeholder="이메일"
+              required
+            />
           </div>
 
           {/* 2. 비밀번호 */}
@@ -261,6 +246,7 @@ const styles = {
     width: '70px',
     textAlign: 'left',
   },
+  // 일반 입력창 스타일 (이메일, 비밀번호, 닉네임 공통 사용)
   input: {
     width: '320px',
     height: '50px',
@@ -272,46 +258,16 @@ const styles = {
     outline: 'none',
     boxSizing: 'border-box',
   },
-  inputWithBtnContainer: {
+  
+  // ★ [스타일 유지] 3분할 전화번호 컨테이너
+  phoneContainer: {
     display: 'flex',
     width: '320px',
     justifyContent: 'space-between',
     gap: '10px',
   },
-  inputShort: {
-    flex: 1,
-    height: '50px',
-    borderRadius: '25px',
-    border: 'none',
-    padding: '0 20px',
-    fontSize: '16px',
-    backgroundColor: '#fff',
-    outline: 'none',
-    boxSizing: 'border-box',
-  },
-  checkBtn: {
-    width: '100px',
-    height: '50px',
-    borderRadius: '25px',
-    border: 'none',
-    backgroundColor: '#007bff',
-    color: '#fff',
-    fontSize: '14px',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-    whiteSpace: 'nowrap',
-  },
-
-  // ★ [스타일 추가] 3분할 전화번호 컨테이너
-  phoneContainer: {
-    display: 'flex',
-    width: '320px',
-    justifyContent: 'space-between',
-    gap: '10px', // 칸 사이 간격
-  },
-  // 010 고정창 스타일 (작은 사이즈)
   phonePartFixed: {
-    width: '80px', // 010 영역 너비
+    width: '80px',
     height: '50px',
     borderRadius: '25px',
     border: 'none',
@@ -325,9 +281,8 @@ const styles = {
     pointerEvents: 'none',
     userSelect: 'none',
   },
-  // 중간, 끝 번호 입력창 스타일 (동일 비율)
   phonePart: {
-    flex: 1, // 남은 공간을 균등하게 나눔
+    flex: 1,
     height: '50px',
     borderRadius: '25px',
     border: 'none',

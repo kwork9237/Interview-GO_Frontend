@@ -8,6 +8,7 @@ import Modal from '../../components/common/Modal';
 import Card from '../../components/common/Card';
 import Badge from '../../components/common/Badge';
 import Spinner from '../../components/common/Spinner';
+import Input from '../../components/common/Input';
 
 const DesignGuidePage = () => {
   // 독립적인 모달 테스트를 위한 상태
@@ -151,10 +152,57 @@ const DesignGuidePage = () => {
 
         </section>
         {/* -------------------------------------------------------------
-            4. 배지
+            4. 인풋 디자인
            ------------------------------------------------------------- */}
         <section>
-          <h2 className="text-2xl font-bold mb-6 border-l-4 border-primary pl-3">4. 배지 (Badges)</h2>
+          <h2 className="text-2xl font-bold mb-6 border-l-4 border-primary pl-3">4. 입력 필드 (Inputs)</h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white p-8 rounded-xl border border-gray-100">
+
+            {/* 1. 기본 상태 */}
+            <div>
+              <h3 className="text-sm text-gray-400 mb-4">Default State</h3>
+              <Input
+                id="email"
+                label="이메일"
+                placeholder="example@email.com"
+              />
+              <Input
+                id="password"
+                type="password"
+                label="비밀번호"
+                placeholder="비밀번호를 입력하세요"
+              />
+            </div>
+
+            {/* 2. 특수 상태 (에러 & 비활성) */}
+            <div>
+              <h3 className="text-sm text-gray-400 mb-4">Error & Disabled</h3>
+              {/* 에러 상태 */}
+              <Input
+                id="error-input"
+                label="닉네임 (에러 예시)"
+                value="이미 사용 중인 닉네임"
+                error="이미 사용 중인 닉네임입니다."
+                onChange={() => { }}
+              />
+
+              {/* 비활성화 상태 */}
+              <Input
+                id="disabled-input"
+                label="읽기 전용 (비활성)"
+                value="수정할 수 없는 데이터"
+                disabled={true}
+              />
+            </div>
+
+          </div>
+        </section>
+        {/* -------------------------------------------------------------
+            5. 배지
+           ------------------------------------------------------------- */}
+        <section>
+          <h2 className="text-2xl font-bold mb-6 border-l-4 border-primary pl-3">5. 배지 (Badges)</h2>
           <div className="flex flex-wrap gap-4 items-center bg-white p-6 rounded-xl border border-gray-100">
 
             {/* 면접 상태 예시 */}
@@ -185,10 +233,10 @@ const DesignGuidePage = () => {
           </div>
         </section>
         {/* -------------------------------------------------------------
-            5. 카드
+            6. 카드
            ------------------------------------------------------------- */}
         <section>
-          <h2 className="text-2xl font-bold mb-6 border-l-4 border-primary pl-3">5. 카드 (Cards)</h2>
+          <h2 className="text-2xl font-bold mb-6 border-l-4 border-primary pl-3">6. 카드 (Cards)</h2>
 
           <div className="space-y-10">
             {/* A. Large 사이즈 - 메인 하단용 (2열 배치) */}
@@ -243,10 +291,10 @@ const DesignGuidePage = () => {
         </section>
 
         {/* -------------------------------------------------------------
-            6. 스피너
+            7. 스피너
            ------------------------------------------------------------- */}
         <section>
-          <h2 className="text-2xl font-bold mb-6 border-l-4 border-primary pl-3">로딩 스피너 (Spinners)</h2>
+          <h2 className="text-2xl font-bold mb-6 border-l-4 border-primary pl-3">7. 로딩 스피너 (Spinners)</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-white p-8 rounded-xl border border-gray-100">
 
             {/* 기본형 */}
@@ -270,10 +318,10 @@ const DesignGuidePage = () => {
           </div>
         </section>
         {/* -------------------------------------------------------------
-            7. 모달
+            8. 모달
            ------------------------------------------------------------- */}
         <section>
-          <h2 className="text-2xl font-bold mb-6 border-l-4 border-primary pl-3">7. 모달 (Modal)</h2>
+          <h2 className="text-2xl font-bold mb-6 border-l-4 border-primary pl-3">8. 모달 (Modal)</h2>
 
           <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
             <p className="text-gray-600 mb-4">
@@ -304,10 +352,10 @@ const DesignGuidePage = () => {
         </section>
 
         {/* -------------------------------------------------------------
-            8. 푸터 디자인 (Footer)
+            9. 푸터 디자인 (Footer)
            ------------------------------------------------------------- */}
         <section>
-          <h2 className="text-2xl font-bold mb-6 border-l-4 border-primary pl-3">8. 푸터 (Footer)</h2>
+          <h2 className="text-2xl font-bold mb-6 border-l-4 border-primary pl-3">9. 푸터 (Footer)</h2>
           <div className="border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
             <Footer />
           </div>

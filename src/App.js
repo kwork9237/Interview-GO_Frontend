@@ -27,9 +27,8 @@ import CodingTestMain from './pages/codingTest/CodingTestPage';
 import CodingTestResult from './pages/codingTest/CodingTestResultPage';
 
 // 테스트용 페이지
-import TestMain from './pages/test/maintest';
 import DesignGuidePage from './pages/test/DesignGuidePage';
-
+import PreviewInterview from './pages/test/PreviewInterviewPage';
 
 function App() {
   return (
@@ -67,15 +66,9 @@ function App() {
           <Route path='/interview/voice' element={<VoiceInterview />} />
         </Route>
 
-        {/* 아래처럼 지정하면 처음 Layout 출력 > Route 된 경로 안의 페이지 데이터 출력된다.
-            element를 지정하지 않을 경우는 그냥 Route Path만 지정하면 된다.
-         */}
-        <Route element={<MainLayout />}>
-          <Route path='/test1' element={<TestMain />} />
-        </Route>
-        <Route path='/test2' element={<TestMain />} />
-
+        {/* 테스트용 페이지 */}
         <Route path="/design" element={<DesignGuidePage />} />
+        <Route path="/test-sidebar" element={<PreviewInterview />} />
       </Routes>
     </BrowserRouter>
   );

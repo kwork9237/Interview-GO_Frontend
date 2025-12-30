@@ -29,6 +29,7 @@ import CodingTestResult from './pages/codingTest/CodingTestResultPage';
 // 테스트용 페이지
 import TestMain from './pages/test/maintest';
 import DesignGuidePage from './pages/test/DesignGuidePage';
+import InterviewPage from './pages/interview/InterviewPage';
 
 
 function App() {
@@ -63,8 +64,10 @@ function App() {
 
         {/* 면접 전용 헤드 사용 */}
         <Route element={<InterviewLayout />}>
-          <Route path='/interview/chat' element={<TextInterview />} />
-          <Route path='/interview/voice' element={<VoiceInterview />} />
+          <Route path='/interview/start/:id' element={<InterviewPage/>}/>
+
+          {/* <Route path='/interview/chat' element={<TextInterview />} />
+          <Route path='/interview/voice' element={<VoiceInterview />} /> */}
         </Route>
 
         {/* 아래처럼 지정하면 처음 Layout 출력 > Route 된 경로 안의 페이지 데이터 출력된다.

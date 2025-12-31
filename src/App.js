@@ -32,7 +32,7 @@ import DesignGuidePage from './pages/test/DesignGuidePage';
 
 // npm start로 실행
 // 시작되지 않을 경우, npm install >> npm start
-import TestInterview from './interview/InterviewTestPage';
+//import TestInterview from './interview/InterviewTestPage';
 
 
 function App() {
@@ -70,14 +70,6 @@ function App() {
           <Route path='/interview/chat' element={<TextInterview />} />
           <Route path='/interview/voice' element={<VoiceInterview />} />
         </Route>
-
-<<<<<<< HEAD
-        {/* 테스트 페이지 종류 */}
-        <Route path='/interview/test' element={<TestInterview/>}/>
-
-
-=======
->>>>>>> 56e1f8d65c83609b2dda45fe1c09a4a8c9702bc4
         {/* 아래처럼 지정하면 처음 Layout 출력 > Route 된 경로 안의 페이지 데이터 출력된다.
             element를 지정하지 않을 경우는 그냥 Route Path만 지정하면 된다.
          */}

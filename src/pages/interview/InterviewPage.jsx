@@ -9,6 +9,7 @@ const InterviewPage = () => {
     const [userInput, setUserInput] = useState('');
     const [loading, setLoading] = useState(false);
     const scrollRef = useRef();
+    const isStarted = useRef(false);
 
     // 메시지 추가 시 하단 자동 스크롤
     useEffect(() => {
@@ -20,8 +21,10 @@ const InterviewPage = () => {
     // 1. 페이지 로드 시 첫 질문 호출
     useEffect(() => {
         const startInterview = async () => {
+            if (isStarted.current) return;
+            isStarted.current = true;
+
             try {
-                // 백엔드의 ssid 파라미터 명칭 확인 필요 (sid vs ssid)
                 const response = await fetch(`http://localhost:8080/api/interview/start?sid=${id}`, {
                     method: 'POST'
                 });
@@ -47,7 +50,7 @@ const InterviewPage = () => {
         setMessages(prev => [...prev, { type: 'user', text: currentInput }]);
 
         try {
-            const response = await fetch(`http://localhost:8080/api/ai/local/chat?query=${encodeURIComponent(currentInput)}&ssid=${id}`);
+            const response = await fetch(`http://localhost:8080/api/ai/local/chat?q=${encodeURIComponent(currentInput)}&sid=${id}`);
             const result = await response.json();
             const aiData = result.data; // 백엔드에서 파싱된 Map 객체
 
@@ -59,6 +62,9 @@ const InterviewPage = () => {
             }]);
         } catch (error) {
             console.error("답변 수신 에러:", error);
+
+            // 에러가 났을 때 다시 시도하게 하고 싶다면 false로 돌려줌
+            isStarted.current = false;
         } finally {
             setLoading(false);
         }
@@ -111,7 +117,7 @@ const InterviewPage = () => {
                     ))}
                     {loading && (
                         <div className="flex justify-start">
-                            <Spinner size="small" text="면접관이 분석 중..." />
+                            <Spinner size="small" text="면접관이 생각 중..." />
                         </div>
                     )}
                 </div>
@@ -123,7 +129,7 @@ const InterviewPage = () => {
                     type="text" 
                     value={userInput} 
                     onChange={(e) => setUserInput(e.target.value)} 
-                    placeholder={loading ? "분석 중..." : "답변을 입력해 주세요."}
+                    placeholder={loading ? "생각 중..." : "답변을 입력해 주세요."}
                     disabled={loading}
                     className="w-full p-4 pr-32 bg-white border border-gray-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                 />

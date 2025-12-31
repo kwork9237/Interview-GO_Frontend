@@ -1,153 +1,160 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Signup = () => {
   const navigate = useNavigate();
-  const lastPhoneRef = useRef(null);
 
-  // 입력값 상태 관리
+  // 1. 상태 관리 변수명 변경 (mb_pnum -> mb_pnumber)
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    nickname: '',
-    phoneMiddle: '',
-    phoneLast: '',
+    username: '',      
+    mb_password: '',   
+    mb_nickname: '',   
+    mb_pnumber: '',    // 수정됨: mb_pnum -> mb_pnumber
   });
 
-  const { email, password, nickname, phoneMiddle, phoneLast } = formData;
+  // 구조 분해 할당 변경
+  const { username, mb_password, mb_nickname, mb_pnumber } = formData;
 
+  // 일반 입력 핸들러
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handlePhoneMiddle = (e) => {
-    const value = e.target.value;
-    const onlyNumber = value.replace(/[^0-9]/g, '');
-    if (onlyNumber.length <= 4) {
-      setFormData((prev) => ({ ...prev, phoneMiddle: onlyNumber }));
-      if (onlyNumber.length === 4 && lastPhoneRef.current) {
-        lastPhoneRef.current.focus();
-      }
+  // 전화번호 입력 핸들러 (자동 하이픈 적용)
+  const handlePhoneChange = (e) => {
+    const value = e.target.value.replace(/[^0-9]/g, ''); // 숫자만 추출
+    let formattedPhone = '';
+
+    if (value.length <= 3) {
+      formattedPhone = value;
+    } else if (value.length <= 7) {
+      formattedPhone = `${value.slice(0, 3)}-${value.slice(3)}`;
+    } else {
+      formattedPhone = `${value.slice(0, 3)}-${value.slice(3, 7)}-${value.slice(7, 11)}`;
+    }
+
+    // 최대 13자리(하이픈 포함)까지만 입력 가능하도록 제한
+    if (formattedPhone.length <= 13) {
+      // 2. 여기서도 mb_pnumber로 업데이트
+      setFormData((prev) => ({ ...prev, mb_pnumber: formattedPhone }));
     }
   };
 
-  const handlePhoneLast = (e) => {
-    const value = e.target.value;
-    const onlyNumber = value.replace(/[^0-9]/g, '');
-    if (onlyNumber.length <= 4) {
-      setFormData((prev) => ({ ...prev, phoneLast: onlyNumber }));
-    }
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (phoneMiddle.length < 3 || phoneLast.length < 4) {
+    
+    // 유효성 검사: (mb_pnumber 사용)
+    const phoneNumeric = mb_pnumber.replace(/-/g, '');
+    if (phoneNumeric.length < 10) {
       alert('전화번호를 정확히 입력해주세요.');
       return;
     }
-    const fullPhone = `010-${phoneMiddle}-${phoneLast}`;
+
+    // 전송 데이터 구성
     const submitData = {
-      email,
-      password,
-      nickname,
-      phone: fullPhone
+      username,
+      mb_password,
+      mb_nickname,
+      mb_pnumber // 수정됨
     };
-    console.log(submitData);
-    alert(`${nickname}님 환영합니다!\n(번호: ${fullPhone})`);
-    navigate('/login');
+    
+    try {
+      // 실제 백엔드 API 주소 (예: 'http://localhost:8080/join')
+      const response = await axios.post('http://localhost:8080/join', submitData);
+
+      // 요청 성공 시
+      if (response.status === 200 || response.status === 201) {
+        alert(`${mb_nickname}님 회원가입이 완료되었습니다!`);
+        navigate('/login'); 
+      }
+    } catch (error) {
+      console.error('회원가입 에러:', error);
+      const errorMessage = error.response?.data?.message || '회원가입 중 오류가 발생했습니다. 다시 시도해주세요.';
+      alert(errorMessage);
+    }
   };
 
   return (
-    <div style={styles.fullBackground}>
+    <div className="flex justify-center items-center w-screen h-screen bg-[#D9D9D9] relative overflow-hidden m-0 p-0">
       {/* 로고 */}
-      <div style={styles.logoWrapper} onClick={() => navigate('/')}>
+      <div 
+        className="absolute top-5 left-5 text-2xl font-bold text-[#007bff] cursor-pointer select-none"
+        onClick={() => navigate('/')}
+      >
         TEAM LOGO
       </div>
 
-      <div style={styles.signupCard}>
-        <div style={styles.header}>
-          <h1 style={styles.title}>회원가입</h1>
+      <div className="w-full max-w-[550px] text-center">
+        <div className="mb-10">
+          <h1 className="text-[32px] font-bold text-black">회원가입</h1>
         </div>
 
-        <form onSubmit={handleSubmit} style={styles.form}>
+        <form onSubmit={handleSubmit} className="flex flex-col items-center gap-5">
           
-          {/* 1. 이메일 */}
-          <div style={styles.inputRow}>
-            <label style={styles.label}>ID</label>
+          {/* 1. 이메일 (username) */}
+          <div className="flex items-center w-full justify-center">
+            <label className="text-2xl font-bold mr-5 w-[70px] text-left">ID</label>
             <input
               type="email"
-              name="email"
-              value={email}
+              name="username"
+              value={username}
               onChange={handleChange}
-              style={styles.input} 
+              className="w-[350px] h-[50px] rounded-[25px] border-none px-5 text-base bg-white outline-none box-border"
               placeholder="이메일"
               required
             />
           </div>
 
-          {/* 2. 비밀번호 */}
-          <div style={styles.inputRow}>
-            <label style={styles.label}>PW</label>
+          {/* 2. 비밀번호 (mb_password) */}
+          <div className="flex items-center w-full justify-center">
+            <label className="text-2xl font-bold mr-5 w-[70px] text-left">PW</label>
             <input
               type="password"
-              name="password"
-              value={password}
+              name="mb_password"
+              value={mb_password}
               onChange={handleChange}
-              style={styles.input}
+              className="w-[350px] h-[50px] rounded-[25px] border-none px-5 text-base bg-white outline-none box-border"
               placeholder="비밀번호"
               required
             />
           </div>
 
-          {/* 3. 닉네임 */}
-          <div style={styles.inputRow}>
-            <label style={styles.label}>NICK</label>
+          {/* 3. 닉네임 (mb_nickname) */}
+          <div className="flex items-center w-full justify-center">
+            <label className="text-2xl font-bold mr-5 w-[70px] text-left">NICK</label>
             <input
               type="text"
-              name="nickname"
-              value={nickname}
+              name="mb_nickname"
+              value={mb_nickname}
               onChange={handleChange}
-              style={styles.input}
+              className="w-[350px] h-[50px] rounded-[25px] border-none px-5 text-base bg-white outline-none box-border"
               placeholder="닉네임"
               required
             />
           </div>
 
-          {/* 4. 연락처 */}
-          <div style={styles.inputRow}>
-            <label style={styles.label}>TEL</label>
-            <div style={styles.phoneContainer}>
-              <input
-                type="text"
-                value="010"
-                readOnly
-                tabIndex={-1}
-                style={styles.phonePartFixed}
-              />
-              <input
-                type="tel"
-                name="phoneMiddle"
-                value={phoneMiddle}
-                onChange={handlePhoneMiddle}
-                style={styles.phonePart}
-                required
-              />
-              <input
-                type="tel"
-                name="phoneLast"
-                value={phoneLast}
-                onChange={handlePhoneLast}
-                style={styles.phonePart}
-                ref={lastPhoneRef}
-                required
-              />
-            </div>
+          {/* 4. 연락처 (mb_pnumber) */}
+          <div className="flex items-center w-full justify-center">
+            <label className="text-2xl font-bold mr-5 w-[70px] text-left">TEL</label>
+            <input
+              type="tel"
+              name="mb_pnumber"     // 수정됨: name 변경
+              value={mb_pnumber}    // 수정됨: value 변경
+              onChange={handlePhoneChange}
+              className="w-[350px] h-[50px] rounded-[25px] border-none px-5 text-base bg-white outline-none box-border"
+              placeholder="010-0000-0000"
+              required
+            />
           </div>
 
           {/* 가입 버튼 영역 */}
-          <div style={styles.buttonWrapper}>
-            <button type="submit" style={styles.signupBtn}>
+          <div className="mt-2.5">
+            <button 
+              type="submit" 
+              className="w-[350px] h-[55px] rounded-[30px] border-none bg-[#007bff] text-white text-xl font-bold cursor-pointer hover:bg-blue-600 transition-colors"
+            >
               가입하기
             </button>
           </div>
@@ -155,7 +162,7 @@ const Signup = () => {
           {/* 로그인 화면으로 돌아가기 버튼 */}
           <button 
             type="button" 
-            style={styles.backToLoginBtn} 
+            className="mt-1.5 bg-transparent border-none text-[#555] text-sm font-bold cursor-pointer underline hover:text-black"
             onClick={() => navigate('/login')}
           >
             로그인 화면으로 돌아가기
@@ -165,132 +172,6 @@ const Signup = () => {
       </div>
     </div>
   );
-};
-
-// 스타일 상수
-const INPUT_WIDTH = '340px'; // 너비 약간 축소
-const LABEL_WIDTH = '60px';
-const INPUT_HEIGHT = '45px'; // 높이 50 -> 45로 축소
-const BORDER_RADIUS = '22.5px'; // 높이의 절반
-
-const styles = {
-  fullBackground: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100vw',
-    height: '100vh',
-    backgroundColor: '#D9D9D9',
-    position: 'relative',
-    margin: 0,
-    padding: 0,
-    overflowY: 'auto', // 화면이 너무 작을 경우 스크롤 허용
-  },
-  logoWrapper: {
-    position: 'absolute',
-    top: '20px',
-    left: '20px',
-    fontSize: '20px', // 폰트 크기 조정
-    fontWeight: 'bold',
-    color: '#007bff',
-    cursor: 'pointer',
-    userSelect: 'none',
-  },
-  signupCard: {
-    width: '100%',
-    maxWidth: '500px', // 카드 최대 너비 약간 축소
-    textAlign: 'center',
-    padding: '20px', // 내부 여백 추가
-  },
-  header: { marginBottom: '20px' }, // 마진 40 -> 20 축소
-  title: { fontSize: '28px', fontWeight: 'bold', color: '#000', margin: 0 }, // 폰트 32 -> 28, 기본 마진 제거
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '15px', // 간격 20 -> 15 축소
-  },
-  inputRow: {
-    display: 'flex',
-    alignItems: 'center',
-    width: '100%',
-    justifyContent: 'center',
-  },
-  label: {
-    fontSize: '18px', // 폰트 24 -> 18 축소 (밸런스 조정)
-    fontWeight: 'bold',
-    marginRight: '15px',
-    width: LABEL_WIDTH,
-    textAlign: 'left',
-  },
-  // [일반 입력창]
-  input: {
-    width: INPUT_WIDTH,
-    height: INPUT_HEIGHT,
-    borderRadius: BORDER_RADIUS,
-    border: 'none',
-    padding: '0 20px',
-    fontSize: '15px',
-    backgroundColor: '#fff',
-    outline: 'none',
-    boxSizing: 'border-box',
-  },
-  // [전화번호 컨테이너]
-  phoneContainer: {
-    display: 'flex',
-    width: INPUT_WIDTH,
-    justifyContent: 'space-between',
-    gap: '8px',
-  },
-  phonePartFixed: {
-    width: '80px',
-    height: INPUT_HEIGHT,
-    borderRadius: BORDER_RADIUS,
-    border: 'none',
-    fontSize: '15px',
-    fontWeight: 'bold',
-    backgroundColor: '#ced4da',
-    color: '#555',
-    textAlign: 'center',
-    outline: 'none',
-    boxSizing: 'border-box',
-    pointerEvents: 'none',
-    userSelect: 'none',
-  },
-  phonePart: {
-    flex: 1,
-    height: INPUT_HEIGHT,
-    borderRadius: BORDER_RADIUS,
-    border: 'none',
-    fontSize: '15px',
-    textAlign: 'center',
-    backgroundColor: '#fff',
-    outline: 'none',
-    boxSizing: 'border-box',
-    padding: '0 10px',
-  },
-  buttonWrapper: { marginTop: '10px' },
-  signupBtn: {
-    width: INPUT_WIDTH,
-    height: '50px', // 버튼 높이 55 -> 50 축소
-    borderRadius: '25px',
-    border: 'none',
-    backgroundColor: '#007bff',
-    color: '#fff',
-    fontSize: '18px', // 폰트 20 -> 18
-    fontWeight: 'bold',
-    cursor: 'pointer',
-  },
-  backToLoginBtn: {
-    marginTop: '5px',
-    backgroundColor: 'transparent',
-    border: 'none',
-    color: '#555',
-    fontSize: '13px',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-    textDecoration: 'underline',
-  },
 };
 
 export default Signup;

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import MainHeader from './MainHeader'; // 이름 일치 (Header -> MainHeader)
 import Footer from './Footer';         // 푸터 추가
 
 const MainLayout = () => {
     // 1. 로그인 상태 관리 (토큰 확인용)
     const [isLogin, setIsLogin] = useState(false);
+    const location = useLocation();
 
+    const isFullWidthPage = location.pathname.includes('/mypage');
     // 2. 화면이 켜질 때 '토큰'이 있는지 검사
     useEffect(() => {
         const token = localStorage.getItem('accessToken');
@@ -30,7 +32,11 @@ const MainLayout = () => {
                 - px-6: 모바일에서 양옆 여백 확보
                 - pt-16: ⭐ 중요! 고정된 헤더(h-16) 높이만큼 내용을 아래로 내림
             */}
-            <main className="flex-1 w-full max-w-7xl mx-auto px-6 pt-16 pb-20">
+            <main className={`flex-1 w-full pt-16 pb-20 ${
+                isFullWidthPage 
+                ? 'max-w-full' // 마이페이지일 때: 전체 너비 사용
+                : 'max-w-7xl mx-auto px-6' // 일반 페이지일 때: 중앙 정렬 & 여백
+            }`}>
                 <Outlet/> 
             </main>
 

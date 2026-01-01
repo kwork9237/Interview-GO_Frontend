@@ -10,6 +10,7 @@ import Main from './pages/MainPage';
 import Login from './member/LoginPage';
 import Signup from './member/SignupPage';
 import MyPage from './member/MyPage';
+import Findpw from './member/Findpw';
 
 // 취업 동향
 import NewsPage from './pages/add-ons/NewsPage';
@@ -36,9 +37,11 @@ function App() {
     <BrowserRouter>
       <Routes>
 
-        {/* 로그인 및 회원가입 */}
+        {/* 로그인 및 회원가입, 비번찾기 */}
         <Route path='/login' element={<Login />} />
         <Route path='/signup' element={<Signup />} />
+        <Route path='/findpw' element={<Findpw />} />
+
 
         {/* 헤드를 사용하는 페이지 */}
         <Route element={<MainLayout />}>

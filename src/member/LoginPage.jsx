@@ -112,7 +112,7 @@ const LoginPage = () => {
                     <Link to="/signup" className="text-sm text-black no-underline cursor-pointer hover:underline hover:text-blue-600 transition-colors">
                         회원가입
                     </Link>
-                    <Link to="#" className="text-sm text-black no-underline cursor-pointer hover:underline hover:text-blue-600 transition-colors">
+                    <Link to="/findpw" className="text-sm text-black no-underline cursor-pointer hover:underline hover:text-blue-600 transition-colors">
                         비밀번호 찾기
                     </Link>
                 </div>

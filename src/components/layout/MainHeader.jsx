@@ -45,8 +45,11 @@ const MainHeader = ({ isLoggedIn, className = '' }) => {
                     <Link to="/codingtest/main" className="hover:text-primary transition-colors">
                         코딩 테스트
                     </Link>
-                    <Link to='/news' className="hover:text-primary transition-colors">
-                        취업 동향
+                    <Link to='/jobs' className="hover:text-primary transition-colors">
+                        채용 공고
+                    </Link>
+                    <Link to='/youtube' className="hover:text-primary transition-colors">
+                        추천 영상
                     </Link>
                 </nav>
 

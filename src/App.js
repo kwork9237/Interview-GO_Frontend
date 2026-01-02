@@ -11,8 +11,11 @@ import Login from './pages/member/LoginPage';
 import Signup from './pages/member/SignupPage';
 import MyPage from './pages/member/MyPage';
 
-// 취업 동향
-import NewsPage from './pages/add-ons/NewsPage';
+// 추천 유튜브 
+import Youtube from './pages/add-ons/Youtube';
+
+// 채용 공고
+import JobList from './pages/add-ons/JobList';
 
 // 면접 (헤드 사용)
 import InterviewSetting from './pages/interview/InterviewSettingPage';
@@ -29,6 +32,7 @@ import CodingTestResult from './pages/codingTest/CodingTestResultPage';
 // 테스트용 페이지
 import TestMain from './pages/test/maintest';
 import DesignGuidePage from './pages/test/DesignGuidePage';
+
 
 // npm start로 실행
 // 시작되지 않을 경우, npm install >> npm start
@@ -53,8 +57,11 @@ function App() {
           {/*마이 페이지 */}
           <Route path='/mypage' element={<MyPage />} />
 
-          {/* 뉴스 */}
-          <Route path='/news' element={<NewsPage />} />
+          {/* 유튜브 */}
+          <Route path='/youtube' element={<Youtube />} />
+
+          {/* 채용공고 */}
+          <Route path='/jobs' element={<JobList />} />
 
           {/* 코딩 테스트 */}
           <Route path='/codingtest/main' element={<CodingTestMain />} />

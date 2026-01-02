@@ -18,7 +18,7 @@ const LoginPage = () => {
 
         const loginData = {
             username: username,
-            password: mb_password // 주의: 백엔드가 'password'라는 키값을 원할 확률이 높습니다. 만약 백엔드 DTO가 mb_password라면 그대로 두세요. 여기서는 안전하게 매핑했습니다.
+            mb_password: mb_password // 주의: 백엔드가 'password'라는 키값을 원할 확률이 높습니다. 만약 백엔드 DTO가 mb_password라면 그대로 두세요. 여기서는 안전하게 매핑했습니다.
         };
 
         try {
@@ -32,8 +32,11 @@ const LoginPage = () => {
 
             // 3. 로그인 성공 처리 (200 OK)
             if (response.status === 200) {
+                console.log('로그인 성공:', response.data);
+
                 // 헤더에서 토큰 꺼내기 (Authorization 헤더 사용 시)
-                const token = response.headers['authorization'] || response.data.token;
+ //             const token = response.headers['authorization'] || response.data.token;
+                const token = response.headers['authorization'] || response.data;
                 
                 if (token) {
                     localStorage.setItem('accessToken', token); // 로컬 스토리지 저장
@@ -47,7 +50,7 @@ const LoginPage = () => {
             // 4. 에러 처리
             console.error('로그인 에러:', error);
             if (error.response && error.response.status === 403) {
-                alert('로그인 권한이 없습니다. (백엔드 Security 설정을 확인해주세요)');
+                alert('아이디 비밀번호가 일치하지 않습니다 다시 확인해주시기 바랍니다.');
             } else if (error.response && error.response.status === 401) {
                 alert('아이디 또는 비밀번호가 일치하지 않습니다.');
             } else {

@@ -5,24 +5,24 @@ import axios from 'axios';
 const FindPw = () => {
   const navigate = useNavigate();
 
-  // 1. 상태 관리
+  // 1. 입력 폼 상태
   const [formData, setFormData] = useState({
     username: '',      // 아이디
     mb_pnumber: ''     // 전화번호
   });
   
-  // 임시 비밀번호 상태 (초기값은 비어있음)
+  // 2. 임시 비밀번호 상태
   const [tempPassword, setTempPassword] = useState('');
 
   const { username, mb_pnumber } = formData;
 
-  // 2. 입력 핸들러
+  // 입력 핸들러
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // 3. 전화번호 핸들러
+  // 전화번호 자동 하이픈
   const handlePhoneChange = (e) => {
     const value = e.target.value.replace(/[^0-9]/g, '');
     let formattedPhone = '';
@@ -40,7 +40,7 @@ const FindPw = () => {
     }
   };
 
-  // 4. 전송 핸들러
+  // ★ 핵심 수정: 전송 핸들러
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -50,25 +50,35 @@ const FindPw = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:8080/api/find-password', {
+      // 서버 요청
+      // 백엔드에서는 이 요청을 받으면:
+      // 1. 유저 확인
+      // 2. 4자리 숫자 생성 및 DB 업데이트
+      // 3. JSON 응답으로 { "tempPassword": "1234" } 형태를 반환해야 함
+      const response = await axios.post('http://localhost:8080/find-password', {
         username,
         mb_pnumber
       });
 
+      // 성공(200 OK) 시 서버가 준 데이터 활용
       if (response.status === 200) {
-        // 백엔드에서 받은 6자리 비밀번호 (키값 확인 필요: tempPassword 등)
-        const receivedPw = response.data.tempPassword || response.data.password;
         
-        if (receivedPw) {
-          setTempPassword(receivedPw); // 여기에 값이 들어가면 화면 상단 박스가 바뀝니다.
-          alert("임시 비밀번호가 발급되었습니다.");
+        // ★ [수정됨] 백엔드에서 보내준 값(response.data)을 사용
+        // 백엔드 컨트롤러가 반환하는 키값(예: tempPassword)과 정확히 일치해야 합니다.
+        const serverGeneratedPw = response.data.tempPassword || response.data.password; 
+
+        if (serverGeneratedPw) {
+            setTempPassword(serverGeneratedPw); 
+            alert(`인증 성공! 임시 비밀번호가 발급되었습니다.`);
         } else {
-          alert("서버 응답 오류: 비밀번호를 찾을 수 없습니다.");
+            // 200 OK지만 데이터가 없을 경우
+            alert("서버 응답에 비밀번호 데이터가 없습니다. 관리자에게 문의하세요.");
         }
       }
+
     } catch (error) {
       console.error('에러:', error);
-      setTempPassword(''); // 실패 시 초기화
+      setTempPassword('');
       const errorMessage = error.response?.data?.message || '일치하는 정보를 찾을 수 없습니다.';
       alert(errorMessage);
     }
@@ -76,9 +86,10 @@ const FindPw = () => {
 
   return (
     <div className="flex justify-center items-center w-screen h-screen bg-[#D9D9D9] relative overflow-hidden">
-      {/* 로고 */}
+      
+      {/* 왼쪽 상단 로고 */}
       <div 
-        className="absolute top-5 left-5 text-2xl font-bold text-[#007bff] cursor-pointer select-none"
+        className="absolute top-5 left-5 text-2xl font-bold text-[#007bff] cursor-pointer select-none hover:opacity-80 transition-opacity"
         onClick={() => navigate('/')}
       >
         TEAM LOGO
@@ -91,24 +102,7 @@ const FindPw = () => {
 
         <form onSubmit={handleSubmit} className="flex flex-col items-center gap-5">
           
-          {/* === [고정된 임시 비밀번호 표시란] === */}
-          {/* 입력 불가능(read-only)한 div 박스입니다 */}
-          <div className="w-full flex flex-col items-start gap-2">
-            <span className="text-sm font-bold text-gray-600 ml-2">임시 비밀번호 (발급 결과)</span>
-            <div 
-              className={`w-full h-[60px] rounded-[15px] border-2 flex items-center justify-center text-2xl font-black tracking-[0.5em] transition-all duration-300
-                ${tempPassword 
-                  ? 'bg-blue-50 border-[#007bff] text-[#007bff]'  // 비밀번호가 있을 때 (활성)
-                  : 'bg-gray-200 border-gray-300 text-gray-400'   // 비밀번호가 없을 때 (비활성)
-                }`}
-            >
-              {/* 비밀번호가 없으면 6자리 대시(-), 있으면 비밀번호 표시 */}
-              {tempPassword ? tempPassword : "------"}
-            </div>
-          </div>
-          {/* =================================== */}
-
-          {/* 아이디 입력 */}
+          {/* 1. 아이디 입력 */}
           <div className="w-full">
             <input
               type="email"
@@ -121,7 +115,7 @@ const FindPw = () => {
             />
           </div>
 
-          {/* 전화번호 입력 */}
+          {/* 2. 전화번호 입력 */}
           <div className="w-full">
             <input
               type="tel"
@@ -134,8 +128,8 @@ const FindPw = () => {
             />
           </div>
 
-          {/* 버튼 영역 */}
-          <div className="mt-4 w-full">
+          {/* 3. 발급 버튼 */}
+          <div className="w-full mt-2">
             <button 
               type="submit" 
               className="w-full h-[55px] rounded-[30px] border-none bg-[#007bff] text-white text-xl font-bold cursor-pointer hover:bg-blue-600 transition-colors"
@@ -144,7 +138,21 @@ const FindPw = () => {
             </button>
           </div>
 
-          {/* 하단 링크 */}
+          {/* 4. 임시 비밀번호 결과 표시란 */}
+          <div className="w-full flex flex-col items-start gap-2 mt-2">
+            <span className="text-sm font-bold text-gray-600 ml-2">발급된 임시 비밀번호</span>
+            <div 
+              className={`w-full h-[60px] rounded-[15px] border-2 flex items-center justify-center text-3xl font-black tracking-[0.5em] transition-all duration-300 select-all
+                ${tempPassword 
+                  ? 'bg-blue-50 border-[#007bff] text-[#007bff]' 
+                  : 'bg-gray-200 border-gray-300 text-gray-400'
+                }`}
+            >
+              {tempPassword ? tempPassword : "----"}
+            </div>
+          </div>
+
+          {/* 5. 하단 링크 */}
           <div className="flex gap-4 mt-2 text-sm text-gray-600">
              <span className="cursor-pointer hover:text-black hover:underline" onClick={() => navigate('/login')}>로그인</span>
              <span>|</span>

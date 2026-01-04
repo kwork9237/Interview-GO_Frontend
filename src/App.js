@@ -19,8 +19,10 @@ import InterviewSetting from './pages/interview/InterviewSettingPage';
 import InterviewFeedback from './pages/interview/InterviewFeedbackPage';
 
 // 면접 (면접 전용 헤드 사용)
-import TextInterview from './pages/interview/TextInterviewPage';
-import VoiceInterview from './pages/interview/VoiceInterviewPage';
+import InterviewPage from './pages/interview/InterviewPage';
+import NewTest from './pages/interview/NewTest';
+// import TextInterview from './pages/interview/TextInterviewPage';
+// import VoiceInterview from './pages/interview/VoiceInterviewPage';
 
 // 코딩 테스트
 import CodingTestMain from './pages/codingTest/CodingTestPage';
@@ -28,12 +30,7 @@ import CodingTestResult from './pages/codingTest/CodingTestResultPage';
 
 // 테스트용 페이지
 import DesignGuidePage from './pages/test/DesignGuidePage';
-<<<<<<< HEAD
-import InterviewPage from './pages/interview/InterviewPage';
-
-=======
 import PreviewInterview from './pages/test/PreviewInterviewPage';
->>>>>>> origin/jimin
 
 function App() {
   return (
@@ -67,7 +64,7 @@ function App() {
 
         {/* 면접 전용 헤드 사용 */}
         <Route element={<InterviewLayout />}>
-          <Route path='/interview/start/:id' element={<InterviewPage/>}/>
+          <Route path='/interview/start/:id' element={<NewTest/>}/>
 
           {/* <Route path='/interview/chat' element={<TextInterview />} />
           <Route path='/interview/voice' element={<VoiceInterview />} /> */}

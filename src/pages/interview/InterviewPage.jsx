@@ -8,6 +8,7 @@ const InterviewPage = () => {
     const [messages, setMessages] = useState([]);
     const [userInput, setUserInput] = useState('');
     const [loading, setLoading] = useState(false);
+    const [isFinished, setIsFinished] = useState(false);
     const scrollRef = useRef();
     const isStarted = useRef(false);
 
@@ -40,7 +41,7 @@ const InterviewPage = () => {
     // 2. 답변 전송 핸들러
     const handleSend = async (e) => {
         e.preventDefault();
-        if (!userInput.trim() || loading) return;
+        if (!userInput.trim() || loading || isFinished) return;
 
         const currentInput = userInput;
         setUserInput('');
@@ -60,6 +61,11 @@ const InterviewPage = () => {
                 score: aiData.score, 
                 feedback: aiData.feedback 
             }]);
+
+            if (aiData.isLast) { 
+                setIsFinished(true);
+            }
+            
         } catch (error) {
             console.error("답변 수신 에러:", error);
 
@@ -115,6 +121,16 @@ const InterviewPage = () => {
                             </div>
                         </div>
                     ))}
+
+                    {/* 면접 종료 안내 UI */}
+                    {isFinished && (
+                        <div className="flex justify-center my-8 animate-bounce">
+                            <div className="bg-gray-800 text-white px-6 py-2 rounded-full text-sm font-medium shadow-lg">
+                                🏁 모든 면접 질문이 끝났습니다. 수고하셨습니다!
+                            </div>
+                        </div>
+                    )}
+
                     {loading && (
                         <div className="flex justify-start">
                             <Spinner size="small" text="면접관이 생각 중..." />
@@ -129,18 +145,25 @@ const InterviewPage = () => {
                     type="text" 
                     value={userInput} 
                     onChange={(e) => setUserInput(e.target.value)} 
-                    placeholder={loading ? "생각 중..." : "답변을 입력해 주세요."}
-                    disabled={loading}
-                    className="w-full p-4 pr-32 bg-white border border-gray-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                    // 종료되었거나 로딩 중일 때 placeholder 변경 및 비활성화
+                    placeholder={
+                        isFinished 
+                        ? "면접이 종료되었습니다." 
+                        : (loading ? "생각 중..." : "답변을 입력해 주세요.")
+                    }
+                    disabled={loading || isFinished}
+                    className={`w-full p-4 pr-32 bg-white border border-gray-200 rounded-2xl shadow-sm focus:outline-none transition-all ${
+                        isFinished ? 'bg-gray-50 cursor-not-allowed' : 'focus:ring-2 focus:ring-primary/20'
+                    }`}
                 />
                 <div className="absolute right-2 top-2">
                     <Button 
                         type="submit" 
                         size="small" 
-                        disabled={loading || !userInput.trim()}
+                        disabled={loading || !userInput.trim() || isFinished}
                         className="px-6 py-2"
                     >
-                        전송
+                        {isFinished ? "종료됨" : "전송"}
                     </Button>
                 </div>
             </form>

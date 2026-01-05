@@ -106,6 +106,8 @@ const InterviewPage = () => {
         setMessages(prev => [...prev, { type: 'user', text: currentInput }]);
 
         try {
+            // 로컬모드 : http://localhost:8080/api/ai/local/chat
+            // 서버모드 : http://localhost:8080/api/ai/server/chat
             const response = await fetch(`http://localhost:8080/api/ai/local/chat?q=${encodeURIComponent(currentInput)}&sid=${id}`);
             const result = await response.json();
             const aiData = result.data;

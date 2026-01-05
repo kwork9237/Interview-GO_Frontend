@@ -26,8 +26,7 @@ import InterviewSetting from './pages/interview/InterviewSettingPage';
 import InterviewFeedback from './pages/interview/InterviewFeedbackPage';
 
 // 면접 (면접 전용 헤드 사용)
-import TextInterview from './pages/interview/TextInterviewPage';
-import VoiceInterview from './pages/interview/VoiceInterviewPage';
+import InterviewPage from './pages/interview/InterviewPage';
 
 // 코딩 테스트
 import CodingTestMain from './pages/codingTest/CodingTestPage';
@@ -82,8 +81,7 @@ function App() {
 
         {/* 면접 전용 헤드 사용 */}
         <Route element={<InterviewLayout />}>
-          <Route path='/interview/chat' element={<TextInterview />} />
-          <Route path='/interview/voice' element={<VoiceInterview />} />
+          <Route path='/interview/start/:id' element={<InterviewPage/>}/>
         </Route>
 
         {/* 테스트용 페이지 */}

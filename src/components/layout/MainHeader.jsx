@@ -16,10 +16,17 @@ const MainHeader = ({ isLoggedIn, className = '' }) => {
     // 1. 기능 핸들러 (Functions)
     // [로그아웃 처리]
     // - 추후 백엔드 연동 시 localStorage.removeItem('accessToken') 등의 로직이 이곳에 추가됩니다.
-    const handleLogout = () => {
+    const handleLogout = (e) => {
         alert("로그아웃 되었습니다.");
+        localStorage.removeItem('accessToken');     // 토큰 삭제
+        localStorage.removeItem('refreshToken');  // 리프레시 토큰 삭제
+         
         // TODO: 실제 로그아웃 처리 로직 구현 (상태값 변경 등)
-        navigate('/'); // 메인 페이지로 리다이렉트
+        // navigate('/'); // 메인 페이지로 리다이렉트
+
+        // 페이지를 메인('/')으로 이동시키면서 동시에 '새로고침' 하는 효과가 있습니다.
+        window.location.href = '/';   // 메인 페이지로 리다이렉트
+
     };
 
     return (

@@ -42,7 +42,6 @@ const InterviewPage = () => {
             console.log(historyRes.status);
             // 1. 서버 응답 자체가 에러인 경우 (404, 500 등)
             if (!historyRes.ok) {
-                console.log("TEST0001");
                 alert("유효하지 않은 면접 세션입니다.");
                 navigate('/');
                 return;

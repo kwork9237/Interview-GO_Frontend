@@ -14,6 +14,9 @@ import MyPage from './pages/member/MyPage';
 // 추천 유튜브 
 import Youtube from './pages/add-ons/Youtube';
 
+//취업 키워드
+import WordCloud from './pages/add-ons/WordCloud';
+
 // 채용 공고
 import JobList from './pages/add-ons/JobList';
 
@@ -59,6 +62,9 @@ function App() {
 
           {/* 유튜브 */}
           <Route path='/youtube' element={<Youtube />} />
+
+          {/* 취업 키워드 */}
+          <Route path='/wordcloud' element={<WordCloud />} />
 
           {/* 채용공고 */}
           <Route path='/jobs' element={<JobList />} />

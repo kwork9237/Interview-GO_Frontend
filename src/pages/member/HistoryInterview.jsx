@@ -1,40 +1,17 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import Card from '../../components/common/Card';
 import Badge from '../../components/common/Badge';
 import Modal from '../../components/common/Modal';
 
 /**
  * 면접 연습 이력 목록 + 상세 모달 컴포넌트
- * @param {Array} data - 면접 질문/답변/피드백 이력 데이터
+ * @param {Array} data - 백엔드(MyPageService)에서 그룹화되어 넘어온 InterviewGroupDTO 리스트
  */
 const HistoryInterview = ({ data }) => {
     // 선택된 면접 세션 (클릭 시 모달로 상세 표시)
     const [selectedSession, setSelectedSession] = useState(null);
 
-    // 1. 데이터 그룹핑 (안전한 버전)
-    // 같은 면접 세션을 날짜(분 단위) 기준으로 묶음
-    const groupedData = useMemo(() => {
-        if (!data) return {};
-
-        return data.reduce((acc, item) => {
-            // 날짜 문자열이 없으면 제외
-            if (!item.iv_date) return acc;
-
-            // "2024-12-30T14:20:05.123" -> "2024-12-30T14:20"
-            // 초/밀리초 차이로 저장된 질문들을 하나의 면접으로 묶기 위함
-            const dateKey = item.iv_date.substring(0, 16); 
-
-            if (!acc[dateKey]) {
-                acc[dateKey] = [];
-            }
-            acc[dateKey].push(item);
-            return acc;
-        }, {});
-    }, [data]);
-
-    // 최신 면접이 위로 오도록 날짜 내림차순 정렬
-    const sortedDates = Object.keys(groupedData).sort((a, b) => new Date(b) - new Date(a));
-
+    // [2026-01-06 수정] 백엔드에서 이미 그룹화해서 보내주므로 useMemo를 통한 수동 그룹핑 로직을 제거함
     // 데이터가 없을 경우 안내 카드 표시
     if (!data || data.length === 0) {
         return (
@@ -44,7 +21,7 @@ const HistoryInterview = ({ data }) => {
         );
     }
 
-    // 날짜 포맷팅 함수
+    // 날짜 포맷팅 함수 (기존 디자인 유지)
     const formatDate = (dateString) => {
         // "2024-12-30T14:20" 형태이므로 바로 Date 파싱 가능
         const date = new Date(dateString); 
@@ -58,8 +35,9 @@ const HistoryInterview = ({ data }) => {
         <>
             {/* 면접 세션 목록 */}
             <div className="space-y-4">
-                {sortedDates.map((dateKey) => {
-                    const sessionItems = groupedData[dateKey];
+                {/* [2026-01-06 수정] 서버에서 그룹화된 data(InterviewGroupDTO)를 직접 순회하도록 변경 */}
+                {data.map((group, index) => {
+                    const sessionItems = group.qnaList; // 해당 세션의 질문들
                     const firstItem = sessionItems[0];
                     
                     // 평균 점수 계산 (소수점 버림)
@@ -68,10 +46,10 @@ const HistoryInterview = ({ data }) => {
 
                     return (
                         <Card 
-                            key={dateKey} 
+                            key={index} 
                             onClick={() => setSelectedSession(sessionItems)} // 클릭 시 해당 세션 상세 모달 오픈
                             padding="medium"
-                            className="group"
+                            className="group cursor-pointer"
                         >
                             <div className="flex justify-between items-center">
                                 <div>
@@ -79,9 +57,9 @@ const HistoryInterview = ({ data }) => {
                                         {/* 면접 Step 정보 (없으면 1) */}
                                         <Badge variant="primary">Step {firstItem.iv_step || 1}</Badge>
 
-                                        {/* 면접 날짜 */}
+                                        {/* [2026-01-06 수정] 서버에서 전달받은 대표 날짜(interviewDate) 사용 */}
                                         <span className="text-sm text-gray-400 font-bold">
-                                            {formatDate(dateKey)}
+                                            {formatDate(group.interviewDate)}
                                         </span>
 
                                         {/* 해당 면접의 총 질문 수 */}
@@ -90,11 +68,11 @@ const HistoryInterview = ({ data }) => {
                                         </Badge>
                                     </div>
 
-                                    {/* 대표 질문 (여러 개일 경우 "외 n건" 표시) */}
+                                    {/* 대표 질문 (여러 개일 경우 "외 n건" 표시) / [2026-01-06] iv_context 필드 반영 */}
                                     <h3 className="font-bold text-gray-800 text-lg group-hover:text-blue-600 transition-colors">
                                         {sessionItems.length > 1 
-                                            ? `${firstItem.iv_question} 외 ${sessionItems.length - 1}건`
-                                            : firstItem.iv_question}
+                                            ? `${firstItem.iv_context} 외 ${sessionItems.length - 1}건`
+                                            : firstItem.iv_context}
                                     </h3>
                                 </div>
                                 
@@ -131,12 +109,12 @@ const HistoryInterview = ({ data }) => {
                                 </div>
 
                                 <div className="bg-white border border-gray-200 rounded-2xl p-6 pt-8 shadow-sm hover:shadow-md transition-shadow">
-                                    {/* 1. 질문 */}
+                                    {/* 1. 질문 / [2026-01-06] iv_context 반영 */}
                                     <h4 className="font-bold text-xl text-gray-900 mb-4 leading-snug">
-                                        {item.iv_question}
+                                        {item.iv_context}
                                     </h4>
 
-                                    {/* 2. 내 답변 */}
+                                    {/* 2. 내 답변 / [2026-01-06] DB 구조에 따라 필요시 필드명 조정 가능 */}
                                     <div className="bg-gray-50 p-5 rounded-xl mb-4 border border-gray-100">
                                         <span className="text-[10px] font-black text-gray-400 block mb-2 uppercase tracking-widest">MY ANSWER</span>
                                         <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">

@@ -10,10 +10,13 @@ const LoginPage = () => {
     const [username, setUsername] = useState('');
     const [mb_password, setMb_password] = useState('');
     
-    // ✨ 추가: 아이디 저장 체크박스 상태
+    // 아이디 저장 체크박스 상태
     const [rememberId, setRememberId] = useState(false);
+    
+    // ✨ 추가: 말풍선 표시 여부 state
+    const [showTooltip, setShowTooltip] = useState(false);
 
-    // ✨ 추가: 컴포넌트 마운트 시 저장된 아이디 불러오기
+    // 컴포넌트 마운트 시 저장된 아이디 불러오기
     useEffect(() => {
         const savedId = localStorage.getItem('savedId');
         if (savedId) {
@@ -21,6 +24,29 @@ const LoginPage = () => {
             setRememberId(true);
         }
     }, []);
+
+    // ✨ 추가: 툴팁 자동 닫힘 타이머 (5초)
+    useEffect(() => {
+        let timer;
+        if (showTooltip) {
+            timer = setTimeout(() => {
+                setShowTooltip(false);
+            }, 5000);
+        }
+        return () => clearTimeout(timer); // 클린업 (중간에 닫거나 언마운트 시 타이머 취소)
+    }, [showTooltip]);
+
+    // ✨ 추가: 체크박스 핸들러 (체크 시에만 툴팁 켜기)
+    const handleCheckboxChange = (e) => {
+        const isChecked = e.target.checked;
+        setRememberId(isChecked);
+        
+        if (isChecked) {
+            setShowTooltip(true);
+        } else {
+            setShowTooltip(false); // 체크 해제하면 즉시 닫기
+        }
+    };
 
     // 로그인 버튼 클릭 시 실행되는 핸들러
     const handleLogin = async () => {
@@ -54,7 +80,7 @@ const LoginPage = () => {
                     localStorage.setItem('accessToken', token);
                     localStorage.setItem('userInfo', JSON.stringify(user));
 
-                    // ✨ 추가: 아이디 저장 로직 (로그인 성공 시에만 수행)
+                    // 아이디 저장 로직 (로그인 성공 시에만 수행)
                     if (rememberId) {
                         localStorage.setItem('savedId', username);
                     } else {
@@ -134,20 +160,42 @@ const LoginPage = () => {
                             />
                         </div>
                         
-                        {/* ✨ 추가: 아이디 저장 체크박스 & 에러메시지 공간 */}
-                        <div className="flex justify-between items-center px-1">
+                        {/* ✨ 수정: 아이디 저장 체크박스 & 경고 말풍선 */}
+                        <div className="flex justify-between items-center px-1 relative">
                             <label className="flex items-center gap-2 cursor-pointer group">
                                 <input 
                                     type="checkbox"
                                     checked={rememberId}
-                                    onChange={(e) => setRememberId(e.target.checked)}
+                                    onChange={handleCheckboxChange} // ✨ 핸들러 교체
                                     className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
                                 />
-                                <span className="text-sm text-gray-600 group-hover:text-indigo-600 transition-colors">아이디 저장</span>
+                                <span className="text-sm text-gray-600 group-hover:text-indigo-600 transition-colors">
+                                    아이디 저장
+                                </span>
                             </label>
 
-                            {/* (선택사항) 에러 메시지가 뜰 공간을 위해 비워두거나, 나중에 활용 가능 */}
-                            {/* <span className="text-xs text-red-500"></span> */}
+                            {/* ✨ 추가: 경고 말풍선 (조건부 렌더링) */}
+                            {showTooltip && (
+                                <div className="absolute left-0 bottom-8 z-10 w-max bg-gray-800 text-white text-xs rounded-md shadow-lg p-2.5 animate-fade-in-up">
+                                    <div className="flex items-center gap-2">
+                                        <span>공용 PC에서는 사용을 권장하지 않습니다.</span>
+                                        {/* X 닫기 버튼 */}
+                                        <button 
+                                            onClick={(e) => {
+                                                e.stopPropagation(); // 라벨 클릭 이벤트 전파 방지
+                                                setShowTooltip(false);
+                                            }}
+                                            className="text-gray-400 hover:text-white"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    {/* 말풍선 꼬리 */}
+                                    <div className="absolute top-full left-4 -translate-x-1/2 -mt-[1px] border-4 border-transparent border-t-gray-800"></div>
+                                </div>
+                            )}
                         </div>
                     </div>
 

@@ -89,6 +89,9 @@ const InterviewPage = () => {
                 const lastStep = historyList[historyList.length - 1].iv_step;
                 if (lastStep >= 7) {
                     setIsFinished(true); // 여기서 true가 되어야 전송 버튼이 막힘
+
+                    // 면접 종료 상태 전달
+                    window.dispatchEvent(new CustomEvent('interview-finished'));
                 }
 
             } else {
@@ -117,6 +120,7 @@ const InterviewPage = () => {
             // 로컬모드 : http://localhost:8080/api/ai/local/chat
             // 서버모드 : http://localhost:8080/api/ai/server/chat
             const response = await fetch(`http://localhost:8080/api/ai/local/chat?q=${encodeURIComponent(currentInput)}&sid=${id}`);
+            // const response = await fetch(`http://localhost:8080/api/ai/debug?q=${encodeURIComponent(currentInput)}&sid=${id}`);
             const result = await response.json();
             const aiData = result.data;
 
@@ -127,7 +131,12 @@ const InterviewPage = () => {
                 feedback: aiData.feedback 
             }]);
 
-            if (aiData.isLast) setIsFinished(true);
+            if (aiData.isLast) {
+                setIsFinished(true);
+
+                // Head에 인터뷰 종료 수신
+                window.dispatchEvent(new CustomEvent('interview-finished'));
+            }
         } catch (error) {
             console.error("답변 수신 에러:", error);
         } finally {
@@ -140,7 +149,7 @@ const InterviewPage = () => {
             {/* 상단 헤더 */}
             <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shadow-sm z-40 sticky top-0">
                 <h1 className="text-lg font-bold text-gray-800">AI 실전 면접실</h1>
-                <Button size="small" variant="outline" onClick={() => navigate('/')}>나가기</Button>
+                {/* <Button size="small" variant="outline" onClick={() => navigate('/')}>나가기</Button> */}
             </header>
 
             {/* 메인 레이아웃: 사이드바 + 면접창 */}

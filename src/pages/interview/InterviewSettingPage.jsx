@@ -15,11 +15,22 @@ const InterviewSetting = () => {
 
     // 백엔드에 보낼 면접 설정
     const InterviewSettings = async () => {
+        var mbUid = 0;
+
+        // 유저 정보 체크
+        const userInfo = localStorage.getItem('userInfo');
+        if(!userInfo) mbUid = -9999;
+        else {
+            // mb uid 가져오기
+            mbUid = JSON.parse(userInfo).mb_uid;
+            if(!mbUid) mbUid = -9999;
+        }
+
         const setupData = {
-            mb_uid : 9999,
-            ai_mode: mode === 'voice' ? 1 : 0,
-            ai_gender: gender === 'female' ? 1 : 0,
-            ai_speed: speed === 'slow' ? 1 : (speed === 'normal' ? 2 : 3)
+            mb_uid : mbUid,
+            // ai_mode: mode === 'voice' ? 1 : 0,
+            // ai_gender: gender === 'female' ? 1 : 0,
+            // ai_speed: speed === 'slow' ? 1 : (speed === 'normal' ? 2 : 3)
         }
 
         try {
@@ -28,6 +39,7 @@ const InterviewSetting = () => {
                 headers: {
                     'Content-Type' : 'application/json',
                     // 'Authorization' : `Bearer ${localStorage.getItem('accessToken')}`
+                    // 면접 전용 토큰?
                     'Authorization' : `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NjcwNzQyMTQsImV4cCI6MTc2NzQzNDIxNH0.QUvkMD5gsvzhrM1VaUe4-G9yxuWI5026k0ASLRZ5S9Y`
                 },
                 body: JSON.stringify(setupData)

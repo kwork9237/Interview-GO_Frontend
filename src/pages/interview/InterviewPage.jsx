@@ -36,6 +36,14 @@ const InterviewPage = () => {
         if (isStarted.current) return;
         isStarted.current = true;
 
+        // 유저 ID 조회
+        var mbUid = -9999;
+        const userInfo = localStorage.getItem('userInfo');
+        if (userInfo) {
+            const parsed = JSON.parse(userInfo);
+            mbUid = parsed.mb_uid || -9999;
+        }
+
         try {
             // 1. 기존 내역 조회 (GET)
             const historyRes = await fetch(`http://localhost:8080/api/interview/history?sid=${id}`);
@@ -85,7 +93,7 @@ const InterviewPage = () => {
 
             } else {
                 // 3. 내역이 없으면 처음 시작 API 호출
-                const startRes = await fetch(`http://localhost:8080/api/interview/start?sid=${id}`, { method: 'POST' });
+                const startRes = await fetch(`http://localhost:8080/api/interview/start?sid=${id}&uid=${mbUid}`, { method: 'POST' });
                 const startData = await startRes.json();
                 setMessages([{ type: 'ai', text: startData.text }]);
             }

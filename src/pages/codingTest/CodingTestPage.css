@@ -1,0 +1,61 @@
+.coding-test-container {
+  max-width: 2000px;
+  margin: 50px auto; /* 화면 가운데 정렬 */
+  padding: 10px;
+}
+
+.exam-list-header,
+.exam-list-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+
+.exam-list-header {
+  background-color: #e0e0e0;
+  font-weight: bold;
+}
+
+.exam-list-item {
+  background-color: #f9f9f9;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.exam-list-item:hover {
+  background-color: #ececec;
+}
+
+/* 각 항목 폭 조정 */
+.exam-list-header span,
+.exam-list-item span {
+  text-align: center;
+  display: inline-block;
+}
+
+/* 상태 */
+.exam-list-header span:nth-child(1),
+.exam-list-item span:nth-child(1) {
+  width: 250px;
+}
+
+/* 제목 */
+.exam-list-header span:nth-child(2),
+.exam-list-item span:nth-child(2) {
+  width: 200px; /* 제목과 게시날짜 사이 간격 조절 */
+  text-align: center;
+}
+
+/* 게시날짜 */
+.exam-list-header span:nth-child(3),
+.exam-list-item span:nth-child(3) {
+  width: 800px;
+}
+
+/* 완료인원 */
+.exam-list-header span:nth-child(4),
+.exam-list-item span:nth-child(4) {
+  width: 200px;
+}

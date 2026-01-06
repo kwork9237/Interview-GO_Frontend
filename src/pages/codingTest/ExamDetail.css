@@ -1,0 +1,50 @@
+.exam-detail-container {
+  max-width: 800px;      
+  margin: 0 auto;        
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+  color: #333;
+}
+
+.exam-header {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* 제목과 상태 중앙 정렬 */
+  gap: 20px;              /* 상태와 제목 사이 간격 */
+  margin-bottom: 15px;
+}
+
+.exam-status {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #4caf50; /* 상태 색상 (완료: 초록) */
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.exam-title {
+  font-size: 1.5rem;     
+  font-weight: bold;
+}
+
+.exam-info {
+  font-size: 0.9rem;     
+  color: #666;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.exam-content {
+  font-size: 1rem;       
+  line-height: 1.6;
+  text-align: left;      
+}
+
+.exam-answer {
+  font-size: 0.95rem;
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-left: 4px solid #4caf50;
+}

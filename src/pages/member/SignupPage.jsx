@@ -16,6 +16,9 @@ const Signup = () => {
     // 중복 검사 통과 여부 상태
     const [isIdChecked, setIsIdChecked] = useState(false);
 
+    // ✨ 추가: 비밀번호 보이기/숨기기 상태
+    const [showPassword, setShowPassword] = useState(false);
+
     const { username, mb_password, mb_nickname, mb_pnumber } = formData;
 
     // 일반 입력 핸들러
@@ -111,11 +114,16 @@ const Signup = () => {
         }
     };
 
+    // ✨ 추가: 비밀번호 토글 함수
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
     return (
-        // 전체 배경: 연한 회색 (LoginPage와 동일)
+        // 전체 배경
         <div className="min-h-screen flex flex-col bg-gray-50">
             
-            {/* 상단 헤더 (LoginPage와 동일) */}
+            {/* 상단 헤더 */}
             <header className="w-full h-20 bg-white border-b border-gray-200 flex items-center px-8 md:px-20 shrink-0">
                 <div
                     className="text-indigo-600 text-2xl font-bold cursor-pointer select-none"
@@ -128,7 +136,7 @@ const Signup = () => {
             {/* 메인 컨텐츠 영역 */}
             <div className="flex-1 flex justify-center items-center p-4 my-8">
                 
-                {/* 폼 컨테이너: 배경 투명, max-w-sm으로 폭 조절 */}
+                {/* 폼 컨테이너 */}
                 <div className="w-full max-w-sm flex flex-col gap-8 bg-transparent">
                     
                     {/* 타이틀 */}
@@ -160,7 +168,7 @@ const Signup = () => {
                                     중복확인
                                 </button>
                             </div>
-                            {/* 중복확인 상태 메시지 (선택 사항) */}
+                            {/* 중복확인 상태 메시지 */}
                             {username && (
                                 <p className={`text-xs ml-1 ${isIdChecked ? 'text-green-600' : 'text-red-500'}`}>
                                     {isIdChecked ? '사용 가능한 아이디입니다.' : '중복 검사가 필요합니다.'}
@@ -168,18 +176,40 @@ const Signup = () => {
                             )}
                         </div>
 
-                        {/* 2. 비밀번호 */}
+                        {/* 2. 비밀번호 (✨ 수정됨: 눈 아이콘 추가) */}
                         <div className="flex flex-col gap-2">
                             <label className="text-sm font-bold text-gray-700 ml-1">비밀번호</label>
-                            <input
-                                type="password"
-                                name="mb_password"
-                                value={mb_password}
-                                onChange={handleChange}
-                                className="w-full h-12 px-4 rounded-xl border border-gray-300 text-base outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 transition-all bg-white placeholder-gray-400"
-                                placeholder="비밀번호를 입력하세요"
-                                required
-                            />
+                            <div className="relative">
+                                <input
+                                    type={showPassword ? "text" : "password"} // 타입 동적 변경
+                                    name="mb_password"
+                                    value={mb_password}
+                                    onChange={handleChange}
+                                    className="w-full h-12 px-4 pr-12 rounded-xl border border-gray-300 text-base outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 transition-all bg-white placeholder-gray-400"
+                                    placeholder="비밀번호를 입력하세요"
+                                    required
+                                />
+                                {/* ✨ 눈 아이콘 버튼 */}
+                                <button
+                                    type="button"
+                                    onClick={togglePasswordVisibility}
+                                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-indigo-600 focus:outline-none"
+                                >
+                                    {showPassword ? (
+                                        // 눈 뜬 아이콘 (보임)
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                    ) : (
+                                        // 눈 감은 아이콘 (숨김)
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.059 10.059 0 013.999-5.42m3.714-2.172a9.994 9.994 0 018.625 1.564m-6.427 3.443a3 3 0 014.243 4.242" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3l18 18" />
+                                        </svg>
+                                    )}
+                                </button>
+                            </div>
                         </div>
 
                         {/* 3. 닉네임 */}

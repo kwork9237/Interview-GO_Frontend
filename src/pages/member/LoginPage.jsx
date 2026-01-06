@@ -13,8 +13,14 @@ const LoginPage = () => {
     // 아이디 저장 체크박스 상태
     const [rememberId, setRememberId] = useState(false);
     
-    // ✨ 추가: 말풍선 표시 여부 state
+    // 말풍선 표시 여부 state (공용 PC 경고)
     const [showTooltip, setShowTooltip] = useState(false);
+
+    // ✨ 추가: 비밀번호 보이기/숨기기 상태
+    const [showPassword, setShowPassword] = useState(false);
+
+    // ✨ 추가: Caps Lock 경고 표시 상태
+    const [showCapsLock, setShowCapsLock] = useState(false);
 
     // 컴포넌트 마운트 시 저장된 아이디 불러오기
     useEffect(() => {
@@ -25,7 +31,7 @@ const LoginPage = () => {
         }
     }, []);
 
-    // ✨ 추가: 툴팁 자동 닫힘 타이머 (5초)
+    // 툴팁 자동 닫힘 타이머 (5초) - 공용 PC 경고용
     useEffect(() => {
         let timer;
         if (showTooltip) {
@@ -33,10 +39,21 @@ const LoginPage = () => {
                 setShowTooltip(false);
             }, 5000);
         }
-        return () => clearTimeout(timer); // 클린업 (중간에 닫거나 언마운트 시 타이머 취소)
+        return () => clearTimeout(timer);
     }, [showTooltip]);
 
-    // ✨ 추가: 체크박스 핸들러 (체크 시에만 툴팁 켜기)
+    // ✨ 추가: Caps Lock 경고 자동 닫힘 타이머 (5초)
+    useEffect(() => {
+        let timer;
+        if (showCapsLock) {
+            timer = setTimeout(() => {
+                setShowCapsLock(false);
+            }, 5000);
+        }
+        return () => clearTimeout(timer);
+    }, [showCapsLock]);
+
+    // 체크박스 핸들러
     const handleCheckboxChange = (e) => {
         const isChecked = e.target.checked;
         setRememberId(isChecked);
@@ -44,13 +61,27 @@ const LoginPage = () => {
         if (isChecked) {
             setShowTooltip(true);
         } else {
-            setShowTooltip(false); // 체크 해제하면 즉시 닫기
+            setShowTooltip(false);
+        }
+    };
+
+    // ✨ 추가: 비밀번호 입력창 KeyDown 핸들러 (Caps Lock 감지 & 엔터 로그인)
+    const handlePasswordKeyDown = (e) => {
+        // Caps Lock 감지
+        if (e.getModifierState("CapsLock")) {
+            setShowCapsLock(true);
+        } else {
+            setShowCapsLock(false);
+        }
+
+        // 엔터키 로그인
+        if (e.key === 'Enter') {
+            handleLogin();
         }
     };
 
     // 로그인 버튼 클릭 시 실행되는 핸들러
     const handleLogin = async () => {
-        // 1. 유효성 검사
         if (!username || !mb_password) {
             alert('이메일과 비밀번호를 모두 입력해주세요.');
             return;
@@ -62,7 +93,6 @@ const LoginPage = () => {
         };
 
         try {
-            // 2. 서버 로그인 API 요청
             const response = await axios.post('http://localhost:8080/login', loginData, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -70,17 +100,14 @@ const LoginPage = () => {
                 withCredentials: true 
             });
 
-            // 3. 요청 성공 시 처리
             if (response.status === 200) {
                 console.log('로그인 성공:', response.data);
                 const { token, user } = response.data;
                 
                 if (token) {
-                    // 토큰 및 유저 정보 저장
                     localStorage.setItem('accessToken', token);
                     localStorage.setItem('userInfo', JSON.stringify(user));
 
-                    // 아이디 저장 로직 (로그인 성공 시에만 수행)
                     if (rememberId) {
                         localStorage.setItem('savedId', username);
                     } else {
@@ -95,7 +122,6 @@ const LoginPage = () => {
             }
 
         } catch (error) {
-            // 6. 에러 처리
             console.error('로그인 에러:', error);
             if (error.response && error.response.status === 403) {
                 alert('아이디 비밀번호가 일치하지 않습니다 다시 확인해주시기 바랍니다.');
@@ -105,6 +131,11 @@ const LoginPage = () => {
                 alert('로그인 중 오류가 발생했습니다.');
             }
         }
+    };
+
+    // ✨ 추가: 비밀번호 보이기/숨기기 토글 함수
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
     };
 
     return (
@@ -146,27 +177,60 @@ const LoginPage = () => {
                             />
                         </div>
 
-                        {/* 비밀번호 */}
-                        <div className="flex flex-col gap-2">
+                        {/* ✨ 수정: 비밀번호 입력 필드 (아이콘 및 CapsLock 추가) */}
+                        <div className="flex flex-col gap-2 relative">
                             <label className="text-sm font-bold text-gray-700 ml-1">비밀번호</label>
-                            <input 
-                                type="password" 
-                                name="mb_password"
-                                value={mb_password}
-                                onChange={(e) => setMb_password(e.target.value)}
-                                className="w-full h-12 px-4 rounded-xl border border-gray-300 text-base outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 transition-all bg-white placeholder-gray-400"
-                                placeholder="비밀번호를 입력하세요"
-                                onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
-                            />
+                            <div className="relative">
+                                <input 
+                                    type={showPassword ? "text" : "password"} // ✨ 타입 동적 변경
+                                    name="mb_password"
+                                    value={mb_password}
+                                    onChange={(e) => setMb_password(e.target.value)}
+                                    className="w-full h-12 px-4 pr-12 rounded-xl border border-gray-300 text-base outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 transition-all bg-white placeholder-gray-400"
+                                    placeholder="비밀번호를 입력하세요"
+                                    onKeyDown={handlePasswordKeyDown} // ✨ 핸들러 변경
+                                />
+                                
+                                {/* ✨ 눈 아이콘 버튼 */}
+                                <button
+                                    type="button"
+                                    onClick={togglePasswordVisibility}
+                                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-indigo-600 focus:outline-none"
+                                >
+                                    {showPassword ? (
+                                        // 눈 뜬 아이콘 (보임)
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                    ) : (
+                                        // 눈 감은 아이콘 (숨김)
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.059 10.059 0 013.999-5.42m3.714-2.172a9.994 9.994 0 018.625 1.564m-6.427 3.443a3 3 0 014.243 4.242" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3l18 18" />
+                                        </svg>
+                                    )}
+                                </button>
+                            </div>
+
+                            {/* ✨ Caps Lock 경고 메시지 */}
+                            {showCapsLock && (
+                                <div className="absolute top-full left-0 mt-1 flex items-center gap-1 text-xs text-red-500 font-medium animate-pulse">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                    </svg>
+                                    Caps Lock이 켜져 있습니다.
+                                </div>
+                            )}
                         </div>
                         
-                        {/* ✨ 수정: 아이디 저장 체크박스 & 경고 말풍선 */}
+                        {/* 아이디 저장 체크박스 & 경고 말풍선 */}
                         <div className="flex justify-between items-center px-1 relative">
                             <label className="flex items-center gap-2 cursor-pointer group">
                                 <input 
                                     type="checkbox"
                                     checked={rememberId}
-                                    onChange={handleCheckboxChange} // ✨ 핸들러 교체
+                                    onChange={handleCheckboxChange}
                                     className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
                                 />
                                 <span className="text-sm text-gray-600 group-hover:text-indigo-600 transition-colors">
@@ -174,15 +238,14 @@ const LoginPage = () => {
                                 </span>
                             </label>
 
-                            {/* ✨ 추가: 경고 말풍선 (조건부 렌더링) */}
+                            {/* 경고 말풍선 (조건부 렌더링) */}
                             {showTooltip && (
                                 <div className="absolute left-0 bottom-8 z-10 w-max bg-gray-800 text-white text-xs rounded-md shadow-lg p-2.5 animate-fade-in-up">
                                     <div className="flex items-center gap-2">
                                         <span>공용 PC에서는 사용을 권장하지 않습니다.</span>
-                                        {/* X 닫기 버튼 */}
                                         <button 
                                             onClick={(e) => {
-                                                e.stopPropagation(); // 라벨 클릭 이벤트 전파 방지
+                                                e.stopPropagation();
                                                 setShowTooltip(false);
                                             }}
                                             className="text-gray-400 hover:text-white"
@@ -192,7 +255,6 @@ const LoginPage = () => {
                                             </svg>
                                         </button>
                                     </div>
-                                    {/* 말풍선 꼬리 */}
                                     <div className="absolute top-full left-4 -translate-x-1/2 -mt-[1px] border-4 border-transparent border-t-gray-800"></div>
                                 </div>
                             )}

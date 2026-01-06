@@ -26,23 +26,32 @@ const InterviewSetting = () => {
             if(!mbUid) mbUid = -9999;
         }
 
-        const setupData = {
-            mb_uid : mbUid,
+        // const setupData = {
+        //     mb_uid : mbUid,
             // ai_mode: mode === 'voice' ? 1 : 0,
             // ai_gender: gender === 'female' ? 1 : 0,
             // ai_speed: speed === 'slow' ? 1 : (speed === 'normal' ? 2 : 3)
-        }
+        // }
 
         try {
+            // 토큰으로
+            var token = localStorage.getItem('accessToken');
+
+            // if(!token) {
+            //     const tokenRes = await fetch("http://localhost:8080/api/interview/token");
+            //     if (!tokenRes.ok) throw new Error("임시 토큰 발급 실패");
+                
+            //     const tokenData = await tokenRes.json();
+            //     token = tokenData.response; // 서버에서 JSON으로 주는 필드명 확인 필요
+            // }
+
             const response = await fetch("http://localhost:8080/api/interview/setup", {
                 method: 'POST',
                 headers: {
-                    'Content-Type' : 'application/json',
-                    // 'Authorization' : `Bearer ${localStorage.getItem('accessToken')}`
-                    // 면접 전용 토큰?
-                    'Authorization' : `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NjcwNzQyMTQsImV4cCI6MTc2NzQzNDIxNH0.QUvkMD5gsvzhrM1VaUe4-G9yxuWI5026k0ASLRZ5S9Y`
+                    'Content-Type' : 'application/json'
+                    // 'Authorization' : `Bearer ${token}`
                 },
-                body: JSON.stringify(setupData)
+                body: JSON.stringify(null)
             });
 
             if(!response.ok) throw new Error("SERVER ERROR");

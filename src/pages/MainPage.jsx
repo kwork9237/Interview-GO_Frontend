@@ -10,6 +10,22 @@ import Badge from '../components/common/Badge';
 const MainPage = () => {
     const navigate = useNavigate();
 
+    // 면접 시작하기 버튼을 눌렀을때 로그인 페이지로 이동
+    const handleStartClick = () => {
+        const token = localStorage.getItem('accessToken');
+        
+        if (!token) {
+            // 1. 사용자에게 상황 설명 (그냥 튕기는 것보다 훨씬 친절함)
+            if (window.confirm("면접을 시작하려면 로그인이 필요합니다. 로그인 페이지로 이동할까요?")) {
+                // 2. 로그인 후 다시 돌아올 수 있도록 현재 경로를 state에 담아 보냄
+                navigate('/login', { state: { redirectUrl: '/interview/setting' } });
+            }
+            return;
+        }
+        
+        navigate('/interview/setting');
+    };
+
     return (
         <div className="space-y-16">
 
@@ -34,7 +50,8 @@ const MainPage = () => {
                 <div className="flex justify-center gap-4">
                     <Button
                         size="medium"
-                        onClick={() => navigate('/interview/setting')} // 면접 설정 페이지로 이동
+                        // onClick={() => navigate('/interview/setting')} // 면접 설정 페이지로 이동
+                        onClick={handleStartClick}
                         className="shadow-xl shadow-primary/20"
                     >
                         AI 면접 시작하기

@@ -23,6 +23,9 @@ const InterviewPage = () => {
     // 현재 단계를 AI 메시지 개수로 계산
     const currentStep = Math.min(totalStep, messages.filter(m => m.type === 'ai').length);
 
+    // 로컬 스토리지의 토큰
+    const token = localStorage.getItem('accessToken');
+
     // 자동 스크롤
     useEffect(() => {
         if (scrollRef.current) {
@@ -36,18 +39,15 @@ const InterviewPage = () => {
         if (isStarted.current) return;
         isStarted.current = true;
 
-        // 유저 ID 조회
-        var mbUid = -9999;
-        const userInfo = localStorage.getItem('userInfo');
-        if (userInfo) {
-            const parsed = JSON.parse(userInfo);
-            mbUid = parsed.mb_uid || -9999;
-        }
-
         try {
             // 1. 기존 내역 조회 (GET)
-            const historyRes = await fetch(`http://localhost:8080/api/interview/history?sid=${id}`);
-            console.log(historyRes.status);
+            const historyRes = await fetch(`http://localhost:8080/api/interview/history?sid=${id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization' : `Bearer ${token}`
+                }
+            });
+
             // 1. 서버 응답 자체가 에러인 경우 (404, 500 등)
             if (!historyRes.ok) {
                 alert("유효하지 않은 면접 세션입니다.");
@@ -96,7 +96,19 @@ const InterviewPage = () => {
 
             } else {
                 // 3. 내역이 없으면 처음 시작 API 호출
-                const startRes = await fetch(`http://localhost:8080/api/interview/start?sid=${id}&uid=${mbUid}`, { method: 'POST' });
+                const startRes = await fetch(`http://localhost:8080/api/interview/start?sid=${id}`, { 
+                    method: 'GET',
+                    headers: {
+                        'Authorization' : `Bearer ${token}`
+                    }
+                });
+
+                if (!startRes.ok) {
+                    alert("유효하지 않은 면접 세션입니다.");
+                    navigate('/');
+                    return;
+                }
+
                 const startData = await startRes.json();
                 setMessages([{ type: 'ai', text: startData.text }]);
             }
@@ -119,8 +131,26 @@ const InterviewPage = () => {
         try {
             // 로컬모드 : http://localhost:8080/api/ai/local/chat
             // 서버모드 : http://localhost:8080/api/ai/server/chat
-            const response = await fetch(`http://localhost:8080/api/ai/local/chat?q=${encodeURIComponent(currentInput)}&sid=${id}`);
-            // const response = await fetch(`http://localhost:8080/api/ai/debug?q=${encodeURIComponent(currentInput)}&sid=${id}`);
+            // 디버그 : http://localhost:8080/api/ai/debug
+            const response = await fetch(`http://localhost:8080/api/ai/local/chat`, {
+                method: 'POST',
+                headers: {
+                    'Authorization' : `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    uuid: id,
+                    query: currentInput
+                })
+            });
+
+            if (!response.ok) {
+                // 백엔드에서 Map.of("error", "...")로 보낸다면 json()으로 읽을 수 있음
+                const errorData = await response.json().catch(() => ({ error: "알 수 없는 에러가 발생했습니다." }));
+                alert(`에러: ${errorData.error || errorData.message}`);
+                return; // 에러 발생 시 여기서 중단
+            }
+
             const result = await response.json();
             const aiData = result.data;
 

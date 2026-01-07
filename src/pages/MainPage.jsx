@@ -11,19 +11,47 @@ const MainPage = () => {
     const navigate = useNavigate();
 
     // 면접 시작하기 버튼을 눌렀을때 로그인 페이지로 이동
-    const handleStartClick = () => {
+    const handleStartClick = async () => {
+
+        // 사용자의 토큰이 있는지 확인
         const token = localStorage.getItem('accessToken');
         
+        // 토큰이 없는 경우 로그인 페이지로 리다이렉트
         if (!token) {
             // 1. 사용자에게 상황 설명 (그냥 튕기는 것보다 훨씬 친절함)
             if (window.confirm("면접을 시작하려면 로그인이 필요합니다. 로그인 페이지로 이동할까요?")) {
                 // 2. 로그인 후 다시 돌아올 수 있도록 현재 경로를 state에 담아 보냄
-                navigate('/login', { state: { redirectUrl: '/interview/setting' } });
+                navigate('/login', { state: { redirectUrl: '/' } });
             }
             return;
         }
-        
-        navigate('/interview/setting');
+
+        try {
+            // 토큰이 있는 경우 서버 호출하여 신규 세션 생성
+            const setupResponse = await fetch("http://localhost:8080/api/interview/setup", {
+                method: 'POST',
+                headers: {
+                    'Authorization' : `Bearer ${token}`
+                }
+            });
+
+            // 정상으로 return 되지 않을 경우 오류 호출
+            if(!setupResponse.ok) throw new Error("서버 측 처리 오류");
+
+            // 결과값에서 ssid 추출
+            const data = await setupResponse.json();
+
+            // data에 세션 id값이 들어있는 경우 시작페이지 이동.
+            // 그것이 아니면 로그에서 오류값 반환
+            if(data.sid) navigate(`/interview/start/${data.sid}`);
+            else {
+                console.log("유효한 SID를 받지 못했습니다.");
+            }
+            
+        }
+        catch(error) {
+            console.log("ERROR >> ", error);
+        }
     };
 
     return (

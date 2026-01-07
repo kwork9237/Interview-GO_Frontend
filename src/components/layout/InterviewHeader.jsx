@@ -61,6 +61,9 @@ const InterviewHeader = ({ className = '' }) => {
             // TODO: 실제 API 주소에 맞게 수정하세요.
             const response = await fetch(`http://localhost:8080/api/interview/dropout?sid=${id}`, {
                 method: 'DELETE',
+                headers: {
+                    'Authorization' : `Bearer ${localStorage.getItem('accessToken')}`
+                }
             });
 
             if (response.ok) {

@@ -3,7 +3,6 @@
 
 import React, { useState } from 'react';
 
-import MainHeader from '../../components/layout/MainHeader';
 import { Navigate, useNavigate } from 'react-router-dom';
 
 const InterviewSetting = () => {
@@ -15,43 +14,18 @@ const InterviewSetting = () => {
 
     // 백엔드에 보낼 면접 설정
     const InterviewSettings = async () => {
-        var mbUid = 0;
-
-        // 유저 정보 체크
-        const userInfo = localStorage.getItem('userInfo');
-        if(!userInfo) mbUid = -9999;
-        else {
-            // mb uid 가져오기
-            mbUid = JSON.parse(userInfo).mb_uid;
-            if(!mbUid) mbUid = -9999;
-        }
-
-        // const setupData = {
-        //     mb_uid : mbUid,
-            // ai_mode: mode === 'voice' ? 1 : 0,
-            // ai_gender: gender === 'female' ? 1 : 0,
-            // ai_speed: speed === 'slow' ? 1 : (speed === 'normal' ? 2 : 3)
-        // }
-
         try {
             // 토큰으로
-            var token = localStorage.getItem('accessToken');
-
-            // if(!token) {
-            //     const tokenRes = await fetch("http://localhost:8080/api/interview/token");
-            //     if (!tokenRes.ok) throw new Error("임시 토큰 발급 실패");
-                
-            //     const tokenData = await tokenRes.json();
-            //     token = tokenData.response; // 서버에서 JSON으로 주는 필드명 확인 필요
-            // }
+            const token = localStorage.getItem('accessToken');
+            const mbid = JSON.parse(localStorage.getItem('userInfo')).mb_uid;
 
             const response = await fetch("http://localhost:8080/api/interview/setup", {
                 method: 'POST',
                 headers: {
-                    'Content-Type' : 'application/json'
-                    // 'Authorization' : `Bearer ${token}`
+                    'Content-Type' : 'application/json',
+                    'Authorization' : `Bearer ${token}`
                 },
-                body: JSON.stringify(null)
+                body: JSON.stringify(mbid)
             });
 
             if(!response.ok) throw new Error("SERVER ERROR");

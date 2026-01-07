@@ -81,12 +81,12 @@ function App() {
           <Route path='/codingtest/detail/:id' element={<ExamDetail />} />
 
           {/* 면접 */}
-          <Route path='/interview/setting' element={<PrivateRoute><InterviewSetting /></PrivateRoute>}/>
+          {/* <Route path='/interview/setting' element={<PrivateRoute><InterviewSetting /></PrivateRoute>}/> */}
         </Route>
 
         {/* 면접 전용 헤드 사용 */}
         <Route element={<InterviewLayout />}>
-          <Route path='/interview/start/:id' element={<InterviewPage/>}/>
+          <Route path='/interview/start/:id' element={<PrivateRoute><InterviewPage/></PrivateRoute>}/>
         </Route>
 
         {/* 테스트용 페이지 */}

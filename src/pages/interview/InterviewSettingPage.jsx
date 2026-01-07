@@ -3,7 +3,6 @@
 
 import React, { useState } from 'react';
 
-import MainHeader from '../../components/layout/MainHeader';
 import { Navigate, useNavigate } from 'react-router-dom';
 
 const InterviewSetting = () => {
@@ -15,22 +14,18 @@ const InterviewSetting = () => {
 
     // 백엔드에 보낼 면접 설정
     const InterviewSettings = async () => {
-        const setupData = {
-            mb_uid : 9999,
-            ai_mode: mode === 'voice' ? 1 : 0,
-            ai_gender: gender === 'female' ? 1 : 0,
-            ai_speed: speed === 'slow' ? 1 : (speed === 'normal' ? 2 : 3)
-        }
-
         try {
+            // 토큰으로
+            const token = localStorage.getItem('accessToken');
+            const mbid = JSON.parse(localStorage.getItem('userInfo')).mb_uid;
+
             const response = await fetch("http://localhost:8080/api/interview/setup", {
                 method: 'POST',
                 headers: {
                     'Content-Type' : 'application/json',
-                    // 'Authorization' : `Bearer ${localStorage.getItem('accessToken')}`
-                    'Authorization' : `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NjcwNzQyMTQsImV4cCI6MTc2NzQzNDIxNH0.QUvkMD5gsvzhrM1VaUe4-G9yxuWI5026k0ASLRZ5S9Y`
+                    'Authorization' : `Bearer ${token}`
                 },
-                body: JSON.stringify(setupData)
+                body: JSON.stringify(mbid)
             });
 
             if(!response.ok) throw new Error("SERVER ERROR");

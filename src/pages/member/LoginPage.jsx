@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
 const LoginPage = () => {
     const navigate = useNavigate();
 
-    // 입력 폼 상태
+    // AI 면접 시작하기 버튼의 경로 기억을 위해 추가
+    const location = useLocation();
+
+    // 로그인 입력 폼 상태 관리 (아이디/이메일, 비밀번호)
     const [username, setUsername] = useState('');
     const [mb_password, setMb_password] = useState('');
     
@@ -83,7 +86,10 @@ const LoginPage = () => {
                     else localStorage.removeItem('savedId');
                     
                     alert('로그인에 성공했습니다.');
-                    navigate('/'); 
+
+                    // 5. 기존 경로 기억 및 이동
+                    const destination = location.state?.redirectUrl || '/';
+                    navigate(destination);
                 } else {
                     alert('토큰을 받지 못했습니다.');
                 }

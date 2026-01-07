@@ -1,8 +1,8 @@
 // 면접 전용 헤더 컴포넌트입니다.
 // 면접 진행 중 이탈을 방지하기 위한 경고 로직(Modal)이 포함되어 있습니다.
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import Button from '../common/Button'; // 공통 컴포넌트 버튼 활용
 import Modal from '../common/Modal';   // 이탈 방지용 공통 모달
 import Badge from '../common/Badge';
@@ -13,24 +13,66 @@ import Badge from '../common/Badge';
  */
 const InterviewHeader = ({ className = '' }) => {
     const navigate = useNavigate();
+    const { id } = useParams(); // URL의 :id (sid) 값을 가져옵니다.
 
     // 1. 상태 관리 (State)
     // - 면접 종료 확인 모달의 열림/닫힘 상태를 제어합니다.
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    // [추가] 면접 종료 여부 상태
+    const [isFinished, setIsFinished] = useState(false);
+
+    // [추가] 이벤트 리스너로 종료 상태 감지
+    useEffect(() => {
+        const handleFinished = () => setIsFinished(true);
+        window.addEventListener('interview-finished', handleFinished);
+        return () => window.removeEventListener('interview-finished', handleFinished);
+    }, []);
 
     // 2. 이벤트 핸들러 (Handlers)
 
     // [종료 버튼 클릭 시]
     // - 바로 페이지를 이동시키지 않고, 사용자에게 의사를 묻는 모달을 띄웁니다.
     const handleExitClick = () => {
-        setIsModalOpen(true);
+        if (isFinished) {
+            // ⭐ 면접이 끝났으면 모달 없이 바로 메인으로!
+            navigate('/');
+        } else {
+            // 진행 중일 때만 모달 오픈
+            setIsModalOpen(true);
+        }
     };
 
     // [모달 - 종료 확정 시]
     // - 사용자가 '종료하기'를 눌렀을 때만 실제 메인 페이지로 이동시킵니다.
-    const handleConfirmExit = () => {
+    const handleConfirmExit = async () => {
         setIsModalOpen(false);
         // TODO: 면접 중단 로그 기록 등이 필요하면 여기에 작성
+
+        var mbUid = -9999;
+        const userInfo = localStorage.getItem('userInfo');
+        if (userInfo) {
+            const parsed = JSON.parse(userInfo);
+            mbUid = parsed.mb_uid || -9999;
+        }
+
+        try {
+            // 백엔드에 중도 이탈(데이터 삭제) 요청
+            // TODO: 실제 API 주소에 맞게 수정하세요.
+            const response = await fetch(`http://localhost:8080/api/interview/dropout?sid=${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization' : `Bearer ${localStorage.getItem('accessToken')}`
+                }
+            });
+
+            if (response.ok) {
+                console.log("중도 이탈 세션 삭제 성공");
+            }
+        } catch (error) {
+            console.error("중도 이탈 처리 중 오류 발생:", error);
+        }
+
         navigate('/');
     };
 
@@ -65,8 +107,11 @@ const InterviewHeader = ({ className = '' }) => {
                 {/* 오른쪽 영역: 제어 버튼 */}
                 <div>
                     {/* [면접 종료] 버튼: 실수로 누르는 것을 방지하기 위해 눈에 잘 띄는 danger(빨간색) 적용 */}
-                    <Button variant="danger" size="medium" onClick={handleExitClick}>
-                        면접 종료하기
+                    <Button 
+                    variant={isFinished ? "primary" : "danger"} 
+                    onClick={handleExitClick}
+                    >
+                        {isFinished ? "면접 마치기" : "면접 종료하기"}
                     </Button>
                 </div>
             </header>

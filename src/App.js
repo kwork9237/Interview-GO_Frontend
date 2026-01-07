@@ -24,7 +24,7 @@ import JobList from './pages/add-ons/JobList';
 
 // 면접 (헤드 사용)
 import InterviewSetting from './pages/interview/InterviewSettingPage';
-import InterviewFeedback from './pages/interview/InterviewFeedbackPage';
+// import InterviewFeedback from './pages/interview/InterviewFeedbackPage';
 
 // 면접 (면접 전용 헤드 사용)
 import InterviewPage from './pages/interview/InterviewPage';
@@ -37,6 +37,9 @@ import ExamDetail from './pages/codingTest/ExamDetail';
 // 테스트용 페이지
 import DesignGuidePage from './pages/test/DesignGuidePage';
 import PreviewInterview from './pages/test/PreviewInterviewPage';
+
+// 로그인이 필요한 페이지 보호용
+import PrivateRoute from './utils/PrivateRoute';
 
 // npm start로 실행
 // 시작되지 않을 경우, npm install >> npm start
@@ -78,13 +81,12 @@ function App() {
           <Route path='/codingtest/detail/:id' element={<ExamDetail />} />
 
           {/* 면접 */}
-          <Route path='/interview/setting' element={<InterviewSetting />} />
-          <Route path='/interview/feedback' element={<InterviewFeedback />} />
+          {/* <Route path='/interview/setting' element={<PrivateRoute><InterviewSetting /></PrivateRoute>}/> */}
         </Route>
 
         {/* 면접 전용 헤드 사용 */}
         <Route element={<InterviewLayout />}>
-          <Route path='/interview/start/:id' element={<InterviewPage/>}/>
+          <Route path='/interview/start/:id' element={<PrivateRoute><InterviewPage/></PrivateRoute>}/>
         </Route>
 
         {/* 테스트용 페이지 */}

@@ -52,7 +52,7 @@ const MainHeader = ({ isLoggedIn, className = '' }) => {
                     <Link to="/codingtest/main" className="hover:text-primary transition-colors">
                         코딩 테스트
                     </Link>
-                    <Link to='/jobs' className="hover:text-primary transition-colors">
+                    <Link to='/joblist' className="hover:text-primary transition-colors">
                         채용 공고
                     </Link>
                     <Link to='/WordCloud' className="hover:text-primary transition-colors">

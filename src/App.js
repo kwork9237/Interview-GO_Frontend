@@ -70,7 +70,7 @@ function App() {
           <Route path='/wordcloud' element={<WordCloud />} />
 
           {/* 채용공고 */}
-          <Route path='/jobs' element={<JobList />} />
+          <Route path='/joblist' element={<JobList />} />
 
           {/* 코딩 테스트 */}
           <Route path='/codingtest/main' element={<CodingTestMain />} />

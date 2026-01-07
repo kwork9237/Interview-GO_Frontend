@@ -1,61 +1,172 @@
 .coding-test-container {
-  max-width: 2000px;
-  margin: 50px auto; /* 화면 가운데 정렬 */
-  padding: 10px;
+  max-width: 1100px; /* 너무 퍼지지 않게 적절한 너비 설정 */
+  margin: 50px auto;
+  padding: 0 40px;
 }
 
-.exam-list-header,
-.exam-list-item {
+/* 탭 스타일 */
+.language-tabs {
   display: flex;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.tab-item {
+  padding: 8px 24px;
+  border: 1px solid #e9ecef;
+  background-color: white;
+  border-radius: 20px;
+  color: #868e96;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab-item.active {
+  background-color: #4c6ef5;
+  color: white;
+  border-color: #4c6ef5;
+}
+
+/* 제목 영역 */
+.list-title-area {
+  margin: 20px 0;
+}
+
+.total-count-text {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #333;
+}
+
+/* 핵심: 열 정렬 및 비율 고정 */
+.exam-list-header, .exam-list-item {
+  display: grid;
+  /* 비율: 상태(15%), 제목(45%), 날짜(25%), 인원(15%) */
+  grid-template-columns: 0.8fr 3fr 1.5fr 1fr;
   align-items: center;
-  padding: 10px 20px;
-  border-radius: 5px;
+  padding: 15px 20px;
+  text-align: center;
 }
 
 .exam-list-header {
-  background-color: #e0e0e0;
-  font-weight: bold;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 10px;
 }
 
 .exam-list-item {
-  background-color: #f9f9f9;
-  margin-top: 10px;
+  border-bottom: 1px solid #f1f3f5;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background 0.2s;
 }
 
 .exam-list-item:hover {
-  background-color: #ececec;
+  background-color: #f8f9fa;
 }
 
-/* 각 항목 폭 조정 */
-.exam-list-header span,
-.exam-list-item span {
+/* 컬럼별 세부 정렬 */
+.col-title {
+  text-align: left; /* 제목은 왼쪽 정렬이 보기 좋습니다 */
+  padding-left: 20px;
+}
+
+.no-data {
   text-align: center;
+  padding: 60px;
+  color: #adb5bd;
+}
+/* 페이지네이션 전체 컨테이너 */
+.pagination {
+    display: flex;
+    justify-content: center; /* 가로 중앙 정렬 */
+    align-items: center;
+    margin-top: 50px;        /* 목록과의 간격 */
+    margin-bottom: 30px;
+    gap: 8px;                /* 버튼 사이의 간격 */
+}
+
+/* 페이지네이션 버튼 기본 스타일 */
+.pagination button {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    color: #4a5568;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+}
+
+/* 마우스를 올렸을 때 (Hover) */
+.pagination button:hover:not(:disabled) {
+    background-color: #f7fafc;
+    border-color: #cbd5e0;
+}
+
+/* 현재 활성화된 페이지 번호 스타일 (Active) */
+.pagination button.active {
+    background-color: #4f46e5; /* 상단 탭과 동일한 포인트 컬러 */
+    color: white;
+    border-color: #4f46e5;
+}
+
+/* 이전/다음 버튼 비활성화 상태 */
+.pagination button:disabled {
+    color: #cbd5e0;
+    cursor: not-allowed;
+    background-color: #f8fafc;
+}
+.exam-list-item:hover .col-title {
+    color: #4c6ef5; /* 마우스 올리면 제목 색상이 변함 */
+    text-decoration: underline;
+}
+/* [추가] 로그인 안내 배너 스타일 */
+.login-notice-banner {
+  background-color: #f1f3f5;
+  padding: 12px;
+  text-align: center;
+  border-radius: 10px;
+  margin-bottom: 25px;
+  color: #495057;
+  font-size: 0.95rem;
+  border: 1px solid #dee2e6;
+}
+
+/* [수정] 난이도 뱃지 스타일  */
+.level-badge {
   display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  min-width: 50px;
 }
 
-/* 상태 */
-.exam-list-header span:nth-child(1),
-.exam-list-item span:nth-child(1) {
-  width: 250px;
+/* 난이도별 색상 정의 */
+.level-badge.lv0 { background-color: #e9ecef; color: #495057; }
+.level-badge.lv1 { background-color: #d3f9d8; color: #2b8a3e; } /* 초록계열 */
+.level-badge.lv2 { background-color: #fff3bf; color: #e67700; } /* 노랑계열 */
+.level-badge.lv3 { background-color: #ffe3e3; color: #c92a2a; } /* 빨강계열 */
+
+/* [수정] 완료인원 컬럼 강조 */
+.col-count {
+  font-weight: 500;
+  color: #495057;
 }
 
-/* 제목 */
-.exam-list-header span:nth-child(2),
-.exam-list-item span:nth-child(2) {
-  width: 200px; /* 제목과 게시날짜 사이 간격 조절 */
-  text-align: center;
+.col-count b {
+  color: #4c6ef5; /* 포인트 컬러 사용 */
+  font-weight: 700;
 }
 
-/* 게시날짜 */
-.exam-list-header span:nth-child(3),
-.exam-list-item span:nth-child(3) {
-  width: 800px;
-}
-
-/* 완료인원 */
-.exam-list-header span:nth-child(4),
-.exam-list-item span:nth-child(4) {
-  width: 200px;
+/* [추가] 반응형 대응 (선택 사항) */
+@media (max-width: 768px) {
+  .exam-list-header, .exam-list-item {
+    /* 모바일에서는 날짜를 숨기거나 비율 조정 */
+    grid-template-columns: 1fr 3fr 1fr;
+  }
+  .col-date { display: none; }
 }

@@ -1,174 +1,242 @@
 import React, { useState, useEffect } from 'react'; 
 import axios from 'axios'; 
 import Input from '../../components/common/Input';
+import Card from '../../components/common/Card'; 
+import CommonModal from '../../components/common/Modal'; 
 
+const PasswordChangeModal = ({ isOpen, onClose, memberInfo }) => {
+    const [form, setForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    const [validation, setValidation] = useState({ isMatch: false, isLengthOk: false, message: '' });
+
+    useEffect(() => {
+        if (isOpen) {
+            setForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+            setValidation({ isMatch: false, isLengthOk: false, message: '' });
+        }
+    }, [isOpen]);
+
+    useEffect(() => {
+        const { newPassword, confirmPassword } = form;
+        
+        if (!newPassword && !confirmPassword) {
+            setValidation({ isMatch: false, isLengthOk: false, message: '' });
+            return;
+        }
+        const isLengthOk = newPassword.length >= 4;
+        const isMatch = newPassword === confirmPassword;
+        let message = '';
+        if (!isLengthOk) message = '4자 이상 입력해주세요.';
+        else if (!isMatch) message = '비밀번호가 일치하지 않습니다.';
+        else message = '사용 가능한 비밀번호입니다.';
+        setValidation({ isMatch, isLengthOk, message });
+    }, [form]);
+
+    const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+    const handleSubmit = async () => {
+        try {
+            const token = localStorage.getItem('accessToken');
+            await axios.put('http://localhost:8080/api/mypage/password', {
+                mb_uid: memberInfo.mb_uid,
+                currentPassword: form.currentPassword,
+                newPassword: form.newPassword
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            alert("비밀번호가 변경되었습니다. 다시 로그인해주세요.");
+            localStorage.clear();
+            window.location.href = '/login';
+        } catch (error) {
+            alert(error.response?.data || "비밀번호 변경 실패");
+        }
+    };
+
+    return (
+        <CommonModal
+            isOpen={isOpen}
+            onClose={onClose}
+            title="비밀번호 변경"
+            onConfirm={handleSubmit}
+            confirmText="변경하기"
+            cancelText="취소"
+            isConfirmDisabled={!validation.isMatch || !validation.isLengthOk || !form.currentPassword}
+            size="small"
+        >
+            <div className="space-y-4 py-2">
+                <div>
+                    <label className="block text-xs font-bold text-gray-500 mb-1">현재 비밀번호</label>
+                    <input 
+                        type="password" name="currentPassword" 
+                        value={form.currentPassword} onChange={handleChange} 
+                        className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:border-indigo-500 outline-none transition-colors" 
+                        placeholder="현재 비밀번호 입력" 
+                    />
+                </div>
+                <div className="space-y-2">
+                    <label className="block text-xs font-bold text-gray-500">새 비밀번호</label>
+                    <input 
+                        type="password" name="newPassword" 
+                        value={form.newPassword} onChange={handleChange} 
+                        className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:border-indigo-500 outline-none transition-colors" 
+                        placeholder="새 비밀번호 (4자 이상)" 
+                    />
+                    <input 
+                        type="password" name="confirmPassword" 
+                        value={form.confirmPassword} onChange={handleChange} 
+                        className={`w-full p-3 bg-gray-50 rounded-xl border outline-none transition-colors ${
+                            !validation.isMatch && form.confirmPassword ? 'border-red-300 bg-red-50' : 
+                            (validation.isMatch && form.confirmPassword ? 'border-green-300 bg-green-50' : 'border-gray-200 focus:bg-white focus:border-indigo-500')
+                        }`} 
+                        placeholder="새 비밀번호 확인" 
+                    />
+                    {(form.newPassword || form.confirmPassword) && (
+                        <p className={`text-xs font-bold text-right ${validation.isMatch && validation.isLengthOk ? 'text-green-600' : 'text-red-500'}`}>
+                            {validation.message}
+                        </p>
+                    )}
+                </div>
+            </div>
+        </CommonModal>
+    );
+};
+
+// ==========================================
+// 2. [메인 컴포넌트] 프로필 섹션
+// ==========================================
 const ProfileSection = ({ isEditing, memberInfo, editForm, setEditForm }) => {
     
-    // 서버에서 가져온 기본 아이콘 파일명 목록을 저장하는 상태
+    const [showPwModal, setShowPwModal] = useState(false);
     const [iconList, setIconList] = useState([]); 
 
-    // 1. 컴포넌트 마운트 시 실행되는 효과
-    // 서버로부터 기본 프로필 아이콘 목록을 비동기로 요청하여 가져옴
     useEffect(() => {
         const fetchIcons = async () => {
             try {
-                // API 요청을 위해 로컬 스토리지에서 인증 토큰 획득
                 const token = localStorage.getItem('accessToken');
-                
-                // 아이콘 목록 조회 API 호출 (인증 헤더 포함)
-                const response = await axios.get('http://localhost:8080/api/mypage/default-icons', {
+                const res = await axios.get('http://localhost:8080/api/mypage/default-icons', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                
-                // 응답 성공 시 상태 업데이트
-                if (response.status === 200) {
-                    setIconList(response.data);
-                }
-            } catch (error) {
-                console.error("아이콘 목록 로드 실패:", error);
-            }
+                if (res.status === 200) setIconList(res.data);
+            } catch (error) { console.error(error); }
         };
         fetchIcons();
     }, []);
 
-    // 2. 텍스트 입력 필드 변경 핸들러
-    // 닉네임, 전화번호, 비밀번호 등 텍스트 기반 입력값의 변경 사항을 상태에 반영
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setEditForm(prev => ({ ...prev, [name]: value }));
-    };
-
-    // 3. 아이콘 선택 핸들러
-    // 사용자가 목록에서 아이콘을 클릭했을 때 해당 이미지 경로를 수정 폼 상태에 반영
-    const handleIconSelect = (iconName) => {
-        const fullPath = `/images/${iconName}`;
-        setEditForm(prev => ({ ...prev, mb_icon: fullPath }));
-    };
-
-    // 4. 이미지 경로 처리 유틸리티 함수
-    // 상대 경로인 경우 서버 도메인을 붙여주고, 이미지가 없으면 기본 이미지를 반환
+    const handleChange = (e) => setEditForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const handleIconSelect = (iconName) => setEditForm(prev => ({ ...prev, mb_icon: `/images/${iconName}` }));
+    
     const getIconPath = (path) => {
         if (!path) return "/images/default.png";
-        if (path.startsWith("http")) return path; // 이미 전체 URL인 경우 그대로 반환
-        return `http://localhost:8080${path}`;   // 상대 경로인 경우 서버 주소 추가
+        if (path.startsWith("http")) return path;
+        return `http://localhost:8080${path}`;
+    };
+
+    // 🌟 [추가됨] 전화번호 하이픈(-) 자동 포맷팅 함수
+    const formatPhoneNumber = (value) => {
+        if (!value) return "";
+        // 숫자만 추출
+        const cleanVal = value.replace(/[^0-9]/g, ""); 
+        // 010-1234-5678 형식으로 변환
+        return cleanVal.replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`);
     };
 
     return (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 animate-fade-in">
+        <Card padding="large" className="relative h-full"> 
             
-            {/* ===================== */}
-            {/* 프로필 이미지 표시 및 선택 영역 */}
-            {/* ===================== */}
-            <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-8 pb-8 border-b border-gray-100">
-                
-                {/* 1. 좌측: 현재 선택된 이미지 미리보기 */}
-                <div className="shrink-0">
-                    <div className="w-24 h-24 rounded-full bg-gray-50 border-4 border-white shadow-md overflow-hidden flex items-center justify-center">
+            {/* 비밀번호 변경 버튼 */}
+            {!isEditing && (
+                <div className="absolute top-6 right-6 z-10">
+                    <button 
+                        onClick={() => setShowPwModal(true)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 text-gray-500 text-xs font-bold rounded-lg border border-gray-200 hover:bg-white hover:text-indigo-600 hover:border-indigo-200 transition-all shadow-sm"
+                    >
+                        비밀번호 변경
+                    </button>
+                </div>
+            )}
+
+            {/* --- 프로필 이미지 & 기본 정보 --- */}
+            <div className="flex flex-col md:flex-row gap-8 mb-8">
+                <div className="shrink-0 flex justify-center md:justify-start">
+                    <div className="w-28 h-28 rounded-full bg-gray-50 border-4 border-white shadow-lg overflow-hidden relative group">
                         <img
-                            // 수정 모드일 때는 선택 중인 아이콘, 아니면 기존 회원 아이콘 표시
                             src={getIconPath(isEditing ? editForm.mb_icon : memberInfo.mb_icon)}
-                            className="w-full h-full object-cover transition-all duration-300"
+                            className="w-full h-full object-cover"
                             alt="프로필"
-                            // 이미지 로드 실패 시 기본 이미지로 대체
                             onError={(e) => e.target.src = "/images/default.png"}
                         />
                     </div>
                 </div>
 
-                {/* 2. 우측: 상태에 따른 콘텐츠 표시 (수정 모드 vs 조회 모드) */}
-                <div className="flex-1 w-full overflow-hidden">
+                <div className="flex-1 min-w-0 flex flex-col justify-center">
                     {isEditing ? (
-                        // [수정 모드] 가로 스크롤 가능한 아이콘 선택 목록 표시
-                        <div className="flex flex-col gap-3 animate-fade-in-up">
-                            <label className="text-sm font-bold text-gray-700">프로필 아이콘 선택</label>
-                            
-                            {/* 가로 스크롤 영역 컨테이너 */}
-                            <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent p-1">
-                                {iconList.map((iconName, index) => {
-                                    const iconPath = `/images/${iconName}`;
-                                    // 현재 선택된 아이콘인지 확인하여 스타일 차별화
-                                    const isSelected = editForm.mb_icon === iconPath;
-
+                        <div className="animate-fade-in-up">
+                            <label className="text-xs font-bold text-gray-500 mb-2 block">프로필 아이콘 선택</label>
+                            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-indigo-100 p-1">
+                                {iconList.map((iconName, idx) => {
+                                    const isSelected = editForm.mb_icon === `/images/${iconName}`;
                                     return (
-                                        <img
-                                            key={index}
-                                            src={`http://localhost:8080/images/${iconName}`}
-                                            alt="icon"
+                                        <img key={idx} src={`http://localhost:8080/images/${iconName}`} alt="icon"
                                             onClick={() => handleIconSelect(iconName)}
-                                            // 선택된 아이콘은 보라색 테두리와 확대 효과 적용
-                                            className={`w-14 h-14 rounded-full cursor-pointer border-2 transition-all duration-200 hover:scale-110 flex-shrink-0 object-cover ${
-                                                isSelected 
-                                                ? 'border-indigo-600 ring-2 ring-indigo-200 scale-110' 
-                                                : 'border-gray-100 hover:border-indigo-300'
-                                            }`}
+                                            className={`w-12 h-12 rounded-full cursor-pointer object-cover border-2 transition-all hover:scale-110 ${isSelected ? 'border-indigo-600 ring-2 ring-indigo-100 scale-105' : 'border-transparent hover:border-indigo-200'}`}
                                         />
                                     );
                                 })}
                             </div>
                         </div>
                     ) : (
-                        // [조회 모드] 단순 안내 텍스트 표시
-                        <div className="h-24 flex flex-col justify-center">
-                            <h3 className="font-bold text-gray-800 text-lg">프로필 사진</h3>
-                            <p className="text-sm text-gray-400 mt-1">
-                                '내 정보 수정' 버튼을 누르면 아이콘을 변경할 수 있습니다.
-                            </p>
+                        <div className="mt-2">
+                            <div className="flex items-center gap-2 mb-1">
+                                <h2 className="text-2xl font-bold text-gray-900">{memberInfo.mb_nickname}</h2>
+                            </div>
+                            <p className="text-gray-400 text-sm">{memberInfo.username}</p>
                         </div>
                     )}
                 </div>
             </div>
 
-            {/* ===================== */}
-            {/* 사용자 정보 입력 필드 영역 */}
-            {/* ===================== */}
-            <div className="space-y-4">
-                {/* 아이디 (수정 불가능) */}
-                <Input
-                    label="아이디"
-                    value={memberInfo.username || ''}
-                    disabled={true}
+            {/* --- 입력 필드들 --- */}
+            <div className="space-y-4 mb-2">
+                <Input label="아이디" value={memberInfo.username || ''} disabled={true} />
+                <Input label="가입일" value={memberInfo.mb_date ? new Date(memberInfo.mb_date).toLocaleDateString() : '-'} disabled={true} />
+                <Input label="닉네임" name="nickname" value={isEditing ? editForm.nickname : (memberInfo.mb_nickname || '')} onChange={handleChange} disabled={!isEditing} />
+                
+                {/* 🌟 [수정됨] formatPhoneNumber 함수 적용 */}
+                <Input 
+                    label="전화번호" 
+                    name="pnumber" 
+                    value={formatPhoneNumber(isEditing ? editForm.pnumber : (memberInfo.mb_pnumber || ''))} 
+                    onChange={handleChange} 
+                    disabled={!isEditing} 
                 />
-
-                {/* 닉네임 (수정 모드 시 활성화) */}
-                <Input
-                    label="닉네임"
-                    name="nickname"
-                    value={isEditing ? editForm.nickname : (memberInfo.mb_nickname || '')}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                />
-
-                {/* 전화번호 (수정 모드 시 활성화) */}
-                <Input
-                    label="전화번호"
-                    name="pnumber"
-                    value={isEditing ? editForm.pnumber : (memberInfo.mb_pnumber || '')}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                />
-
-                {/* 가입일 (수정 불가능, 날짜 포맷 적용) */}
-                <Input
-                    label="가입일"
-                    value={memberInfo.mb_date ? new Date(memberInfo.mb_date).toLocaleDateString() : '-'}
-                    disabled={true}
-                />
-
-                {/* 비밀번호 확인 (수정 모드일 때만 표시되는 필수 입력 필드) */}
-                {isEditing && (
-                    <div className="pt-6 mt-6 border-t border-dashed border-red-100 animate-fade-in">
-                        <Input
-                            label="비밀번호 확인 (필수)"
-                            type="password"
-                            name="check_password"
-                            value={editForm.check_password}
-                            onChange={handleChange}
-                            placeholder="현재 비밀번호를 입력하세요"
-                        />
-                    </div>
-                )}
             </div>
-        </div>
+
+            {/* --- [필수] 수정 모드 시 저장용 확인 --- */}
+            {isEditing && (
+                <div className="mt-8 pt-6 border-t border-gray-100 animate-fade-in">
+                    <div className="bg-red-50 p-4 rounded-xl border border-red-100 flex gap-4 items-center">
+                        <span className="text-xl">⚠️</span>
+                        <div className="flex-1">
+                            <label className="block text-xs font-bold text-red-500 mb-1">정보 수정 확인 (필수)</label>
+                            <input
+                                type="password"
+                                name="check_password"
+                                value={editForm.check_password}
+                                onChange={handleChange}
+                                placeholder="현재 비밀번호를 입력해야 정보가 저장됩니다"
+                                className="w-full bg-white border border-red-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-red-400"
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* 모달 */}
+            <PasswordChangeModal 
+                isOpen={showPwModal} 
+                onClose={() => setShowPwModal(false)} 
+                memberInfo={memberInfo} 
+            />
+        </Card>
     );
 };
 

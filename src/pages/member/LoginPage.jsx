@@ -71,35 +71,37 @@ const LoginPage = () => {
         setIsLoading(true);
 
         try {
-            const response = await axios.post('http://localhost:8080/login', loginData, {
+            const response = await axios.post('/login', loginData, {
                 headers: { 'Content-Type': 'application/json' },
                 withCredentials: true 
             });
 
-            if (response.status === 200) {
-                const { token, user } = response.data;
-                if (token) {
-                    localStorage.setItem('accessToken', token);
-                    localStorage.setItem('userInfo', JSON.stringify(user));
+            const { token, user } = response.data;
+            
+            if(token) {
+                localStorage.setItem('accessToken', token);
+                localStorage.setItem('userInfo', JSON.stringify(user));
 
-                    if (rememberId) localStorage.setItem('savedId', username);
-                    else localStorage.removeItem('savedId');
-                    
-                    alert('로그인에 성공했습니다.');
+                if (rememberId) localStorage.setItem('savedId', username);
+                else localStorage.removeItem('savedId');
 
-                    // 5. 기존 경로 기억 및 이동
-                    const destination = location.state?.redirectUrl || '/';
-                    navigate(destination);
-                } else {
-                    alert('토큰을 받지 못했습니다.');
-                }
+                alert('로그인에 성공했습니다.');
+
+                const destination = location.state?.redirectUrl || '/';
+                navigate(destination);
             }
-        } catch (error) {
+
+            else {
+                alert('토큰을 받지 못했습니다.');
+            }
+        } 
+        catch (error) {
             console.error('로그인 에러:', error);
             if (error.response?.status === 403) alert('아이디 비밀번호가 일치하지 않습니다.');
             else if (error.response?.status === 401) alert('존재하지 않는 계정입니다.');
             else alert('로그인 중 오류가 발생했습니다.');
-        } finally {
+        }
+        finally {
             // ✨ 로딩 끝 (무조건 실행)
             setIsLoading(false);
         }

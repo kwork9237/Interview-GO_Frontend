@@ -13,7 +13,7 @@ const YoutubeSection = () => {
 
   useEffect(() => {
     // 2. activeCategory가 변경될 때마다 서버에 해당 데이터를 요청합니다.
-    axios.get(`http://localhost:8080/api/admin/youtube/check`, {
+    axios.get(`/api/admin/youtube/check`, {
       params: { category: activeCategory } // 서버의 @RequestParam(value="category")로 전달됨
     })
       .then(response => {

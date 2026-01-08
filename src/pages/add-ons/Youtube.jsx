@@ -50,7 +50,7 @@ const YoutubeSection = () => {
 
   useEffect(() => {
     isMounted.current = true;
-    axios.get(`http://localhost:8080/api/youtube/check`, { params: { category: activeCategory } })
+    axios.get(`/api/youtube/check`, { params: { category: activeCategory } })
       .then(response => {
         if (isMounted.current) setVideoList(response.data);
       })

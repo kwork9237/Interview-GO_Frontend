@@ -27,7 +27,7 @@ const YoutubeSection = () => {
   useEffect(() => {
     isMounted.current = true; // 컴포넌트 등장
     // 백엔드의 @GetMapping("/check") 엔드포인트에 카테고리 파라미터를 담아 요청
-    axios.get(`http://localhost:8080/api/youtube/check`, {
+    axios.get(`/api/youtube/check`, {
       params: { category: activeCategory } 
     })
       .then(response => {

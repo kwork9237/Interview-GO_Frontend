@@ -41,7 +41,7 @@ const InterviewPage = () => {
 
         try {
             // 1. 기존 내역 조회 (GET)
-            const historyRes = await fetch(`http://localhost:8080/api/interview/history?sid=${id}`, {
+            const historyRes = await fetch(`/api/interview/history?sid=${id}`, {
                 method: 'GET',
                 headers: {
                     'Authorization' : `Bearer ${token}`
@@ -96,7 +96,7 @@ const InterviewPage = () => {
 
             } else {
                 // 3. 내역이 없으면 처음 시작 API 호출
-                const startRes = await fetch(`http://localhost:8080/api/interview/start?sid=${id}`, { 
+                const startRes = await fetch(`/api/interview/start?sid=${id}`, { 
                     method: 'GET',
                     headers: {
                         'Authorization' : `Bearer ${token}`
@@ -129,10 +129,10 @@ const InterviewPage = () => {
         setMessages(prev => [...prev, { type: 'user', text: currentInput }]);
 
         try {
-            // 로컬모드 : http://localhost:8080/api/ai/local/chat
-            // 서버모드 : http://localhost:8080/api/ai/server/chat
-            // 디버그 : http://localhost:8080/api/ai/debug/chat
-            const response = await fetch(`http://localhost:8080/api/ai/server/chat`, {
+            // 로컬모드 : /api/ai/local/chat
+            // 서버모드 : /api/ai/server/chat
+            // 디버그 : /api/ai/debug/chat
+            const response = await fetch(`/api/ai/server/chat`, {
                 method: 'POST',
                 headers: {
                     'Authorization' : `Bearer ${token}`,

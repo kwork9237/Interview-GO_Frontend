@@ -26,7 +26,7 @@ const InterviewPage = () => {
             isStarted.current = true;
 
             try {
-                const response = await fetch(`http://localhost:8080/api/interview/start?sid=${id}`, {
+                const response = await fetch(`/api/interview/start?sid=${id}`, {
                     method: 'POST'
                 });
                 const data = await response.json();
@@ -51,7 +51,7 @@ const InterviewPage = () => {
         setMessages(prev => [...prev, { type: 'user', text: currentInput }]);
 
         try {
-            const response = await fetch(`http://localhost:8080/api/ai/local/chat?q=${encodeURIComponent(currentInput)}&sid=${id}`);
+            const response = await fetch(`/api/ai/local/chat?q=${encodeURIComponent(currentInput)}&sid=${id}`);
             const result = await response.json();
             const aiData = result.data; // 백엔드에서 파싱된 Map 객체
 

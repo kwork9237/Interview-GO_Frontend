@@ -14,7 +14,6 @@ const Sidebar = ({
     onMenuClick
 }) => {
     const navigate = useNavigate();
-    const SERVER_URL = "http://localhost:8080";
 
     // 회원 탈퇴 모달 상태
     const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
@@ -28,7 +27,7 @@ const Sidebar = ({
      */
     const handleWithdraw = async () => {
         try {
-            await axios.delete(`${SERVER_URL}/api/mypage/withdraw`, {
+            await axios.delete(`/api/mypage/withdraw`, {
                 data: {
                     mb_uid: memberInfo.mb_uid,      // 🌟 필드명 mb_uid로 통일
                     mb_password: withdrawPassword
@@ -55,14 +54,14 @@ const Sidebar = ({
                         {/* 🌟 렌더링 로직: DB에 저장된 경로가 있으면 서버 URL과 조합, 없으면 default 캐릭터 표시 */}
                         {memberInfo.mb_icon ? (
                             <img 
-                                src={`${SERVER_URL}${memberInfo.mb_icon}`} 
+                                src={`${memberInfo.mb_icon}`} 
                                 alt="프로필" 
                                 className="w-full h-full object-cover" 
-                                onError={(e) => { e.target.src = `${SERVER_URL}/images/default.png`; }}
+                                onError={(e) => { e.target.src = `/images/default.png`; }}
                             />
                         ) : (
                             <img 
-                                src={`${SERVER_URL}/images/default.png`} 
+                                src={`/images/default.png`} 
                                 alt="기본프로필" 
                                 className="w-full h-full object-cover" 
                             />

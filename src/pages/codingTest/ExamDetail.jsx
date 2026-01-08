@@ -12,7 +12,7 @@ const ExamDetail = () => {
   const [showModal, setShowModal] = useState(false); // ✅ 모달 표시 상태 추가
 
   useEffect(() => {
-    fetch(`http://localhost:8080/api/exams/${id}`)
+    fetch(`/api/exams/${id}`)
       .then(res => res.json())
       .then(data => {
         setExam(data);
@@ -43,7 +43,7 @@ const ExamDetail = () => {
       if (isCorrect === true) return; 
       setIsCorrect(true);
 
-      fetch(`http://localhost:8080/api/exams/${id}/complete`, {
+      fetch(`/api/exams/${id}/complete`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

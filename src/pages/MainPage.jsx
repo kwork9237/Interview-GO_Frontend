@@ -21,7 +21,7 @@ const MainPage = () => {
         // (1) 유튜브 데이터 가져오기 (면접 꿀팁 카테고리)
         const fetchYoutube = async () => {
             try {
-                const res = await axios.get(`http://localhost:8080/api/youtube/check`, {
+                const res = await axios.get(`/api/youtube/check`, {
                     params: { category: "면접 꿀팁" }
                 });
                 
@@ -38,7 +38,7 @@ const MainPage = () => {
         const fetchJobs = async () => {
             try {
                 // 백엔드 실제 주소 호출
-                const res = await axios.get('http://localhost:8080/api/work24/list');
+                const res = await axios.get('/api/work24/list');
                 
                 // 데이터가 있고 컴포넌트가 살아있다면 상위 4개만 자르기
                 if (isMounted.current && res.data) {
@@ -96,7 +96,7 @@ const MainPage = () => {
 
         try {
             // 토큰이 있는 경우 서버 호출하여 신규 세션 생성
-            const setupResponse = await fetch("http://localhost:8080/api/interview/setup", {
+            const setupResponse = await fetch("/api/interview/setup", {
                 method: 'POST',
                 headers: {
                     'Authorization' : `Bearer ${token}`

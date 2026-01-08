@@ -59,7 +59,7 @@ const InterviewHeader = ({ className = '' }) => {
         try {
             // 백엔드에 중도 이탈(데이터 삭제) 요청
             // TODO: 실제 API 주소에 맞게 수정하세요.
-            const response = await fetch(`http://localhost:8080/api/interview/dropout?sid=${id}`, {
+            const response = await fetch(`/api/interview/dropout?sid=${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization' : `Bearer ${localStorage.getItem('accessToken')}`

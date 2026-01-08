@@ -24,7 +24,7 @@ const CodingTestPage = () => {
     const pageParam = currentPage - 1;
     const langParam = encodeURIComponent(selectedLang);
     
-    fetch(`http://localhost:8080/api/exams?page=${pageParam}&size=${size}&lang=${langParam}`)
+    fetch(`/api/exams?page=${pageParam}&size=${size}&lang=${langParam}`)
       .then((res) => res.json())
       .then((data) => {
         if (data && data.content) {

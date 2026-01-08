@@ -14,7 +14,7 @@ const JobList = () => {
      */
     useEffect(() => {
         // 백엔드 컨트롤러(@GetMapping("/list"))와 통신
-        axios.get('http://localhost:8080/api/work24/list')
+        axios.get('/api/work24/list')
             .then(response => {
                 // 성공적으로 받아온 30개의 공고 리스트를 상태에 저장
                 setJobs(response.data);

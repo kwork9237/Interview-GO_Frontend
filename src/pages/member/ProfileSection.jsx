@@ -36,7 +36,7 @@ const PasswordChangeModal = ({ isOpen, onClose, memberInfo }) => {
     const handleSubmit = async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            await axios.put('http://localhost:8080/api/mypage/password', {
+            await axios.put('/api/mypage/password', {
                 mb_uid: memberInfo.mb_uid,
                 currentPassword: form.currentPassword,
                 newPassword: form.newPassword
@@ -112,7 +112,7 @@ const ProfileSection = ({ isEditing, memberInfo, editForm, setEditForm }) => {
         const fetchIcons = async () => {
             try {
                 const token = localStorage.getItem('accessToken');
-                const res = await axios.get('http://localhost:8080/api/mypage/default-icons', {
+                const res = await axios.get('/api/mypage/default-icons', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 if (res.status === 200) setIconList(res.data);
@@ -127,7 +127,7 @@ const ProfileSection = ({ isEditing, memberInfo, editForm, setEditForm }) => {
     const getIconPath = (path) => {
         if (!path) return "/images/default.png";
         if (path.startsWith("http")) return path;
-        return `http://localhost:8080${path}`;
+        return `${path}`;
     };
 
     // 🌟 [추가됨] 전화번호 하이픈(-) 자동 포맷팅 함수
@@ -175,7 +175,7 @@ const ProfileSection = ({ isEditing, memberInfo, editForm, setEditForm }) => {
                                 {iconList.map((iconName, idx) => {
                                     const isSelected = editForm.mb_icon === `/images/${iconName}`;
                                     return (
-                                        <img key={idx} src={`http://localhost:8080/images/${iconName}`} alt="icon"
+                                        <img key={idx} src={`/images/${iconName}`} alt="icon"
                                             onClick={() => handleIconSelect(iconName)}
                                             className={`w-12 h-12 rounded-full cursor-pointer object-cover border-2 transition-all hover:scale-110 ${isSelected ? 'border-indigo-600 ring-2 ring-indigo-100 scale-105' : 'border-transparent hover:border-indigo-200'}`}
                                         />

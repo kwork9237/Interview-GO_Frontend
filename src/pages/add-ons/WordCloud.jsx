@@ -15,7 +15,7 @@ const WordCloud = () => {
 
     useEffect(() => {
         setLoading(true); // 데이터 호출 전 로딩 시작
-        axios.get('http://localhost:8080/api/wordcloud/list') // 백엔드 API 호출
+        axios.get('/api/wordcloud/list') // 백엔드 API 호출
             .then(res => {
                 // 백엔드 데이터(word, count)를 라이브러리 규격(value, count)에 맞게 변환
                 const formattedData = res.data.map(item => ({

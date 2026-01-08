@@ -19,7 +19,7 @@ const InterviewSetting = () => {
             const token = localStorage.getItem('accessToken');
             const mbid = JSON.parse(localStorage.getItem('userInfo')).mb_uid;
 
-            const response = await fetch("http://localhost:8080/api/interview/setup", {
+            const response = await fetch("/api/interview/setup", {
                 method: 'POST',
                 headers: {
                     'Content-Type' : 'application/json',

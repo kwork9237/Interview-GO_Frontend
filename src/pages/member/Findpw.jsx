@@ -50,7 +50,7 @@ const FindPw = () => {
         }
 
         try {
-            const response = await axios.post('http://localhost:8080/find-password', {
+            const response = await axios.post('/find-password', {
                 username,
                 mb_pnumber
             });

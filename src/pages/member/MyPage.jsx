@@ -69,9 +69,9 @@ const MyPage = () => {
 
                 // ✅ 내 기능(exam-history) 요청을 추가하여 병렬 처리
                 const [profileRes, examRes, interviewRes] = await Promise.all([
-                    axios.get(`http://localhost:8080/api/mypage/profile?mb_uid=${myUid}`, config),
-                    axios.get(`http://localhost:8080/api/mypage/exam-history?mb_uid=${myUid}`, config),
-                    axios.get(`http://localhost:8080/api/mypage/interview-history?mb_uid=${myUid}`, config)
+                    axios.get(`/api/mypage/profile?mb_uid=${myUid}`, config),
+                    axios.get(`/api/mypage/exam-history?mb_uid=${myUid}`, config),
+                    axios.get(`/api/mypage/interview-history?mb_uid=${myUid}`, config)
                 ]);
 
                 const rawData = profileRes.data;
@@ -132,7 +132,7 @@ const MyPage = () => {
                 mb_icon: editForm.mb_icon
             };
 
-            await axios.put('http://localhost:8080/api/mypage/update', updateData, {
+            await axios.put('/api/mypage/update', updateData, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 

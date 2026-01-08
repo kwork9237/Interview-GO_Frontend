@@ -53,7 +53,7 @@ const Signup = () => {
     const handleCheckDuplicate = async () => {
         if (!username) { alert('ID(이메일)를 입력해주세요.'); return; }
         try {
-            const response = await axios.get(`/check-id`, { params: { username } });
+            const response = await axios.get(`/api/check-id`, { params: { username } });
             if (response.status === 200 && response.data === true) {
                 alert('사용 가능한 ID입니다.'); setIsIdChecked(true);
             } else {
@@ -92,7 +92,7 @@ const Signup = () => {
         };
 
         try {
-            const response = await axios.post('/join', submitData);
+            const response = await axios.post('/api/join', submitData);
             if (response.status === 200 || response.status === 201) {
                 alert(`${mb_nickname}님 회원가입이 완료되었습니다!`);
                 navigate('/login');

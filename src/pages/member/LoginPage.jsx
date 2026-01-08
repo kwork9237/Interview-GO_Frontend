@@ -71,7 +71,7 @@ const LoginPage = () => {
         setIsLoading(true);
 
         try {
-            const response = await axios.post('/login', loginData, {
+            const response = await axios.post('/api/login', loginData, {
                 headers: { 'Content-Type': 'application/json' },
                 withCredentials: true 
             });

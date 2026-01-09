@@ -26,10 +26,22 @@ const Sidebar = ({
      * 회원 탈퇴 API 호출
      */
     const handleWithdraw = async () => {
+        // 1. 저장된 토큰 가져오기
+        const token = localStorage.getItem('accessToken');
+
+        if (!token) {
+            alert("로그인 정보가 없습니다.");
+            return;
+        }
+
         try {
             await axios.delete(`/api/mypage/withdraw`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+                // 3. Body 데이터
                 data: {
-                    mb_uid: memberInfo.mb_uid,      // 🌟 필드명 mb_uid로 통일
+                    mb_uid: memberInfo.mb_uid,
                     mb_password: withdrawPassword
                 }
             });
@@ -40,7 +52,14 @@ const Sidebar = ({
             window.location.reload();
 
         } catch (error) {
-            alert("비밀번호가 일치하지 않거나 탈퇴 처리 중 오류가 발생했습니다.");
+            console.error("탈퇴 에러:", error); // 콘솔에서 에러 내용 확인용
+
+            
+            if (error.response && error.response.status === 403) {
+                alert("권한이 없거나 비밀번호가 일치하지 않습니다.");
+            } else {
+                alert("탈퇴 처리 중 오류가 발생했습니다.");
+            }
         }
     };
 

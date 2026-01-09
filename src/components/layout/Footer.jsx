@@ -39,7 +39,7 @@ const Footer = () => {
                 {/* 2. 우측: 외부 링크 및 정책 */}
                 <div className="flex gap-6 text-sm text-gray-400 font-medium">
                     <a 
-                        href="https://github.com/your-repo" 
+                        href="https://github.com/kwork9237/Interview-GO_Frontend" 
                         target="_blank" 
                         rel="noreferrer" 
                         className="hover:text-blue-600 transition-colors"

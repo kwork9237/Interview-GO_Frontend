@@ -202,8 +202,6 @@ const MyPage = () => {
                         
                         {/* 코딩 테스트 기록 데이터 전달 */}
                         {activeMenu === 'exam' && <HistoryCodingTest data={examHistory} />}
-                        
-                        
                         {activeMenu === 'interview' && <HistoryInterview data={interviewHistory} />}
                     </section>
                 </div>

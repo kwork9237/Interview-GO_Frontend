@@ -95,7 +95,7 @@ const InterviewHeader = ({ className = '' }) => {
                 <div className="flex items-center gap-2">
                     {/* 서비스 로고: 면접 중에는 클릭 시 이동하는 것을 방지하기 위해 <span>으로 구현 */}
                     <span className="text-2xl font-bold text-primary select-none cursor-default">
-                        TEAM LOGO
+                        INTERVIEW GO
                     </span>
 
                     {/* 현재 상태 배지: 사용자가 '면접 중'임을 인지하게 함 */}

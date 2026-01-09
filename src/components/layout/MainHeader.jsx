@@ -40,7 +40,7 @@ const MainHeader = ({ isLoggedIn, className = '' }) => {
             {/* 1. [좌측] 서비스 로고 영역 */}
             <div className="flex items-center">
                 <Link to="/" className="text-2xl font-bold text-primary tracking-tight">
-                    TEAM LOGO
+                    INTERVIEW GO
                 </Link>
             </div>
 
